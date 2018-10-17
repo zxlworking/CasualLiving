@@ -296,6 +296,7 @@ public class CollectQSBKFragment extends BaseFragment {
                         if(position < mQSBKAdapter.getData().size() && TextUtils.equals(mQSBKAdapter.getData().get(position).author_id, qsbkElement.author_id)){
                             mQSBKAdapter.getData().remove(position);
                             mQSBKAdapter.notifyItemRemoved(position);
+                            mQSBKAdapter.notifyItemRangeChanged(position,mQSBKAdapter.getData().size() - position);
                         }
                         Toast.makeText(mActivity,"已取消收藏",Toast.LENGTH_SHORT).show();
                     }
