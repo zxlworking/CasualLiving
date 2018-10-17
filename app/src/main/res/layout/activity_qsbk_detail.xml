@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#3399ffff">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"/>
+
+    <com.zxl.casual.living.custom.view.CustomScaleView
+        android:id="@+id/custom_scale_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#757575"
+        android:padding="12dp"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/scale_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:visibility="gone"/>
+
+        <include
+            android:id="@+id/custom_scale_loading_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            layout="@layout/loading_view"
+            android:visibility="gone"/>
+
+        <include
+            android:id="@+id/custom_scale_load_error_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            layout="@layout/load_error_view"
+            android:visibility="gone"/>
+    </com.zxl.casual.living.custom.view.CustomScaleView>
+
+    <include
+        android:id="@+id/loading_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        layout="@layout/loading_view"/>
+
+    <include
+        android:id="@+id/load_error_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        layout="@layout/load_error_view"
+        android:visibility="gone"/>
+</FrameLayout>

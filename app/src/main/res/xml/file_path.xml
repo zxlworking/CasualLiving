@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <paths>
+        <files-path
+            name="test_weather_update_apk"
+            path=""/>
+        <external-path
+            name="test_weather_update_apk"
+            path=""/>
+        <cache-path
+            name="test_weather_update_apk"
+            path=""/>
+    </paths>
+</resources>
