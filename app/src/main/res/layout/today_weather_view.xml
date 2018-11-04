@@ -9,7 +9,7 @@
         android:id="@+id/today_weather_content_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ffffff"
+        android:background="@drawable/bg_today_weather_content_view"
         android:orientation="horizontal">
 
         <LinearLayout

@@ -338,14 +338,15 @@ public class TodayWeatherView extends CardView {
                 try {
                     File destFile = new File(appDir, fileName);
                     if(destFile.exists()){
+                        DebugUtil.d(TAG,"WXSceneTimeline::destFile exists");
                         destFile.delete();
-                            destFile.createNewFile();
+                        destFile.createNewFile();
                     }
                     FileOutputStream fos = new FileOutputStream(destFile);
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
                     fos.flush();
                     fos.close();
-                    CommonUtils.shareWXBitmap(mContext, destFile.getAbsolutePath(), SendMessageToWX.Req.WXSceneTimeline);
+                    CommonUtils.shareWXLocalBitmap(mContext, destFile.getAbsolutePath(), SendMessageToWX.Req.WXSceneTimeline);
     //                mTodayWeatherContentView.setDrawingCacheEnabled(false);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -377,6 +378,7 @@ public class TodayWeatherView extends CardView {
                 try {
                     File destFile = new File(appDir, fileName);
                     if(destFile.exists()){
+                        DebugUtil.d(TAG,"WXSceneTimeline::destFile exists");
                         destFile.delete();
                         destFile.createNewFile();
                     }
@@ -384,7 +386,7 @@ public class TodayWeatherView extends CardView {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
                     fos.flush();
                     fos.close();
-                    CommonUtils.shareWXBitmap(mContext, destFile.getAbsolutePath(), SendMessageToWX.Req.WXSceneSession);
+                    CommonUtils.shareWXLocalBitmap(mContext, destFile.getAbsolutePath(), SendMessageToWX.Req.WXSceneSession);
                     //                mTodayWeatherContentView.setDrawingCacheEnabled(false);
                 } catch (IOException e) {
                     e.printStackTrace();

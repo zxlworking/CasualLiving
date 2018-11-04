@@ -234,14 +234,17 @@ public class CommonUtils {
         }.execute();
     }
 
-    public static final void shareWXBitmap(final Context context, final Bitmap bitmap, final int scene){
-        DebugUtil.d(TAG,"shareWXBitmap::bitmap = " + bitmap);
+    public static final void shareWXLocalBitmap(final Context context, final String path, final int scene){
+        DebugUtil.d(TAG,"shareWXBitmap::patch = " + path);
+
+        Bitmap thumbBmp = WXUtil.createBitmapThumbnail(path, Constants.THUMB_SIZE, Constants.THUMB_SIZE);
+
         WXImageObject wxImageObject = new WXImageObject();
-        wxImageObject.imageData = WXUtil.bmpToByteArray(bitmap,false);
+        wxImageObject.imagePath = path;
 
         WXMediaMessage wxMediaMessage = new WXMediaMessage();
         wxMediaMessage.mediaObject = wxImageObject;
-        wxMediaMessage.thumbData = WXUtil.bmpToByteArray(bitmap,true);
+        wxMediaMessage.thumbData = WXUtil.bmpToByteArray(thumbBmp,true);
         wxMediaMessage.title = "title";
         wxMediaMessage.description = "description";
 
