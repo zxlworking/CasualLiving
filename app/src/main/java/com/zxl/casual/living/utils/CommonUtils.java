@@ -233,4 +233,22 @@ public class CommonUtils {
             }
         }.execute();
     }
+
+    public static final void shareWXBitmap(final Context context, final Bitmap bitmap, final int scene){
+        DebugUtil.d(TAG,"shareWXBitmap::bitmap = " + bitmap);
+        WXImageObject wxImageObject = new WXImageObject();
+        wxImageObject.imageData = WXUtil.bmpToByteArray(bitmap,false);
+
+        WXMediaMessage wxMediaMessage = new WXMediaMessage();
+        wxMediaMessage.mediaObject = wxImageObject;
+        wxMediaMessage.thumbData = WXUtil.bmpToByteArray(bitmap,true);
+        wxMediaMessage.title = "title";
+        wxMediaMessage.description = "description";
+
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = String.valueOf(System.currentTimeMillis())+"img";
+        req.message = wxMediaMessage;
+        req.scene = scene;
+        CommonUtils.sendWXMessage(req);
+    }
 }

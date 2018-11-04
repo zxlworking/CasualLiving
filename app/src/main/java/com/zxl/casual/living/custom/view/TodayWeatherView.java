@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -11,6 +13,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -22,6 +25,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,6 +33,7 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.zxl.casual.living.CityInfoListActivity;
 import com.zxl.casual.living.R;
 import com.zxl.casual.living.event.LocatePermissionSuccessEvent;
@@ -38,12 +43,15 @@ import com.zxl.casual.living.http.HttpUtils;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.data.TodayWeatherResponseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
+import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.EventBusUtils;
 import com.zxl.common.DebugUtil;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -117,7 +125,7 @@ public class TodayWeatherView extends CardView {
 
             mLocationClient.stop();
 
-            HttpUtils.getInstance().getZHTianQiByCity(mContext, city , new NetRequestListener() {
+            HttpUtils.getInstance().getZHTianQiByCity(mContext, addr, city , new NetRequestListener() {
                 @Override
                 public void onSuccess(ResponseBaseBean responseBaseBean) {
                     DebugUtil.d(TAG,"onSuccess::responseBaseBean = " + responseBaseBean);
@@ -216,6 +224,9 @@ public class TodayWeatherView extends CardView {
     private TodayWeatherDetailSunIconView mTodayWeatherDetail2SunIconView;
     private TextView mTodayWeatherDetail2SunTimeTv;
 
+    public ImageView mShareWechatFriendImg;
+    public ImageView mShareWechatFriendsImg;
+
     private Toolbar mToolbar;
 
     private boolean isLoading = false;
@@ -237,7 +248,7 @@ public class TodayWeatherView extends CardView {
         init(context);
     }
 
-    private void init(Context context) {
+    private void init(final Context context) {
         DebugUtil.d(TAG, "init");
         mContext = context;
 
@@ -284,6 +295,9 @@ public class TodayWeatherView extends CardView {
         mTodayWeatherDetail2SunIconView = mContentView.findViewById(R.id.today_weather_detail_2_sun_icon_view);
         mTodayWeatherDetail2SunTimeTv = mContentView.findViewById(R.id.today_weather_detail_2_sun_time_tv);
 
+        mShareWechatFriendImg = mContentView.findViewById(R.id.share_wechat_friend_img);
+        mShareWechatFriendsImg = mContentView.findViewById(R.id.share_wechat_friends_img);
+
         mLoadErrorBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -298,6 +312,83 @@ public class TodayWeatherView extends CardView {
                 Intent intent = new Intent(mContext, CityInfoListActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(intent);
+            }
+        });
+
+        mShareWechatFriendImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mTodayWeatherContentView.setDrawingCacheEnabled(true);
+//                mTodayWeatherContentView.measure(
+//                        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+//                        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+//                mTodayWeatherContentView.layout(0, 0, mTodayWeatherContentView.getMeasuredWidth(),
+//                        mTodayWeatherContentView.getMeasuredHeight());
+                mTodayWeatherContentView.buildDrawingCache();
+                Bitmap bitmap = Bitmap.createBitmap(mTodayWeatherContentView.getDrawingCache());
+
+                // 首先保存图片
+                File pictureFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile();
+
+                File appDir = new File(pictureFolder ,"test_weather");
+                if (!appDir.exists()) {
+                    appDir.mkdirs();
+                }
+                String fileName = "today_weather.png";
+                try {
+                    File destFile = new File(appDir, fileName);
+                    if(destFile.exists()){
+                        destFile.delete();
+                            destFile.createNewFile();
+                    }
+                    FileOutputStream fos = new FileOutputStream(destFile);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                    fos.flush();
+                    fos.close();
+                    CommonUtils.shareWXBitmap(mContext, destFile.getAbsolutePath(), SendMessageToWX.Req.WXSceneTimeline);
+    //                mTodayWeatherContentView.setDrawingCacheEnabled(false);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        mShareWechatFriendsImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mTodayWeatherContentView.setDrawingCacheEnabled(true);
+//                mTodayWeatherContentView.measure(
+//                        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+//                        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+//                mTodayWeatherContentView.layout(0, 0, mTodayWeatherContentView.getMeasuredWidth(),
+//                        mTodayWeatherContentView.getMeasuredHeight());
+                mTodayWeatherContentView.buildDrawingCache();
+                Bitmap bitmap= Bitmap.createBitmap(mTodayWeatherContentView.getDrawingCache());
+
+                // 首先保存图片
+                File pictureFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile();
+
+                File appDir = new File(pictureFolder ,"test_weather");
+                if (!appDir.exists()) {
+                    appDir.mkdirs();
+                }
+                String fileName = "today_weather.png";
+                try {
+                    File destFile = new File(appDir, fileName);
+                    if(destFile.exists()){
+                        destFile.delete();
+                        destFile.createNewFile();
+                    }
+                    FileOutputStream fos = new FileOutputStream(destFile);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                    fos.flush();
+                    fos.close();
+                    CommonUtils.shareWXBitmap(mContext, destFile.getAbsolutePath(), SendMessageToWX.Req.WXSceneSession);
+                    //                mTodayWeatherContentView.setDrawingCacheEnabled(false);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -396,7 +487,7 @@ public class TodayWeatherView extends CardView {
         mLoadErrorView.setVisibility(GONE);
         mTodayWeatherContentView.setVisibility(INVISIBLE);
 
-        HttpUtils.getInstance().getZHTianQiByCity(mContext, city, new NetRequestListener() {
+        HttpUtils.getInstance().getZHTianQiByCity(mContext, "", city, new NetRequestListener() {
             @Override
             public void onSuccess(ResponseBaseBean responseBaseBean) {
                 DebugUtil.d(TAG,"onSuccess::responseBaseBean = " + responseBaseBean);
@@ -458,7 +549,14 @@ public class TodayWeatherView extends CardView {
     private void setDataToView(TodayWeatherResponseBean todayWeatherResponseBean) {
         setToolbarTitle(todayWeatherResponseBean.today_weather.simple_content);
 
-        mAddressInfo.setText(todayWeatherResponseBean.address_info);
+        String addr = todayWeatherResponseBean.address_info;
+        DebugUtil.d(TAG,"setDataToView::addr = " + addr);
+        if(!TextUtils.isEmpty(addr) && addr.contains(todayWeatherResponseBean.city_name)){
+            addr = addr.substring(addr.indexOf(todayWeatherResponseBean.city_name));
+        }else{
+            addr = todayWeatherResponseBean.city_name;
+        }
+        mAddressInfo.setText(addr);
         mNowTimeTv.setText(todayWeatherResponseBean.today_weather.now_time);
         mTodayWeatherTemperatureView.setTodayWeatherTemperatureIconCss(todayWeatherResponseBean.today_weather.temperature_icon_css);
         mTemperatureTv.setText(todayWeatherResponseBean.today_weather.temperature + "°C");

@@ -26,8 +26,8 @@ public interface HttpAPI {
 //    public Call<ResponseBody> getZHTianQiByLocation(@Query("l")String l);
 
     @GET("cgi_server/cgi_weather/test3.py")
-    public Observable<TodayWeatherResponseBean> getZHTianQiByCity(@Query("city")String city);
-//    public Call<ResponseBody> getZHTianQiByCity(@Query("city")String city);
+    public Observable<TodayWeatherResponseBean> getZHTianQiByCity(@Query("addr")String addr, @Query("city")String city);
+//    public Call<ResponseBody> getZHTianQiByCity(@Query("addr")String addr, @Query("city")String city);
 
     @GET("cgi_server/cgi_weather/test4.py")
     public Observable<TaoBaoAnchorListResponseBean> getTaoBaoAnchor(@Query("page")int page);

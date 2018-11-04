@@ -3,6 +3,7 @@ package com.zxl.casual.living.http;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
 import com.zxl.casual.living.http.data.QSBKElementList;
@@ -139,11 +140,13 @@ public class HttpUtils {
         }
     }
 
-    public void getZHTianQiByCity(Context context, String city, final NetRequestListener listener){
-        DebugUtil.d(TAG,"getZHTianQiByCity::city = " + city);
+    public void getZHTianQiByCity(Context context, String addr, String city, final NetRequestListener listener){
+//        city = "南京";
+//        addr = "";
+        DebugUtil.d(TAG,"getZHTianQiByCity::addr = " + addr + "::city = " + city);
 
         if(isNetworkAvailable(context)){
-//            Call<ResponseBody> call = mHttpAPI.getZHTianQiByCity(city);
+//            Call<ResponseBody> call = mHttpAPI.getZHTianQiByCity(addr,city);
 //            call.enqueue(new Callback<ResponseBody>() {
 //                @Override
 //                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -160,7 +163,7 @@ public class HttpUtils {
 //
 //                }
 //            });
-            Observable<TodayWeatherResponseBean> observable = mHttpAPI.getZHTianQiByCity(city);
+            Observable<TodayWeatherResponseBean> observable = mHttpAPI.getZHTianQiByCity(addr, city);
             observable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<ResponseBaseBean>() {
