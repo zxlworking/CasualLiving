@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.zxl.casual.living.GlideApp;
@@ -105,8 +106,7 @@ public class PaletteView extends LinearLayout {
             GlideApp
                     .with(mContext)
                     .asBitmap()
-                    .placeholder(R.mipmap.pic_loading)
-                    .error(R.mipmap.pic_load_error)
+                    .apply(new RequestOptions().placeholder(R.mipmap.pic_loading).error(R.mipmap.pic_load_error))
                     .override(img.getWidth(),img.getHeight())
                     .transition(new BitmapTransitionOptions().crossFade(500))
                     .load(url)

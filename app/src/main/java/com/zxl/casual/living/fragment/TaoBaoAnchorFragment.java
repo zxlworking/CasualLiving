@@ -1,6 +1,7 @@
 package com.zxl.casual.living.fragment;
 
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.zxl.casual.living.R;
+import com.zxl.casual.living.common.LoadMoreAdapter;
 import com.zxl.casual.living.custom.view.PaletteView;
 import com.zxl.casual.living.http.HttpUtils;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
@@ -80,7 +82,7 @@ public class TaoBaoAnchorFragment extends BaseFragment {
                     mLoadErrorView.setVisibility(View.GONE);
 
                     List<TaoBaoAnchor> mFirstTemp = (List<TaoBaoAnchor>) msg.obj;
-                    mTaoBaoAnchorAdapter.setData(mFirstTemp);
+                    mTaoBaoAnchorAdapter.setData(mFirstTemp,mCurrentPage,mTotalPage);
 
                     isLoading = false;
                     mSwipeRefreshLayout.setRefreshing(false);
@@ -104,7 +106,7 @@ public class TaoBaoAnchorFragment extends BaseFragment {
                     mLoadErrorView.setVisibility(View.GONE);
 
                     List<TaoBaoAnchor> mTemp = (List<TaoBaoAnchor>) msg.obj;
-                    mTaoBaoAnchorAdapter.addData(mTemp);
+                    mTaoBaoAnchorAdapter.addData(mTemp,mCurrentPage,mTotalPage);
 
                     isLoading = false;
                     mSwipeRefreshLayout.setRefreshing(false);
@@ -172,6 +174,7 @@ public class TaoBaoAnchorFragment extends BaseFragment {
             }
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
+
         mTaoBaoAnchorAdapter = new TaoBaoAnchorAdapter();
         mRecyclerView.setAdapter(mTaoBaoAnchorAdapter);
 
@@ -235,10 +238,129 @@ public class TaoBaoAnchorFragment extends BaseFragment {
                 }
             }
         });
-
-
     }
 
+    public class TaoBaoAnchorAdapter extends LoadMoreAdapter<TaoBaoAnchor>{
+
+        @Override
+        public RecyclerView.ViewHolder getContentViewHolder(@NonNull ViewGroup parent) {
+            View mItemView = LayoutInflater.from(mActivity).inflate(R.layout.item_taobao_anchor_view, parent, false);
+            return new TaoBaoAnchorViewHolder(mItemView);
+        }
+
+        @Override
+        public RecyclerView.ViewHolder getFootViewHolder(@NonNull ViewGroup parent) {
+            View mItemFootView = LayoutInflater.from(mActivity).inflate(R.layout.item_taobao_anchor_foot_view, parent, false);
+            return new TaoBaoAnchorFootViewHolder(mItemFootView);
+        }
+
+        @Override
+        public void onBindContentViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+            TaoBaoAnchorViewHolder mTaoBaoAnchorViewHolder = (TaoBaoAnchorViewHolder) viewHolder;
+
+            ViewGroup.LayoutParams lp = mTaoBaoAnchorViewHolder.mItemTaobaoAnchorImg.getLayoutParams();
+            lp.width = (int) ((CommonUtils.screenWidth() - CommonUtils.dip2px(12) * 3) / 2 - CommonUtils.dip2px(8)) + 2;
+            lp.height = lp.width;
+            mTaoBaoAnchorViewHolder.mItemTaobaoAnchorImg.setLayoutParams(lp);
+
+
+            final TaoBaoAnchorViewHolder finalMTaoBaoAnchorViewHolder = mTaoBaoAnchorViewHolder;
+            mTaoBaoAnchorViewHolder.mPaletteView.parse(getData().get(position).anchor_img, mTaoBaoAnchorViewHolder.mItemTaobaoAnchorImg, new PaletteView.OnPaletteCompleteListener() {
+                @Override
+                public void onComplete(Palette palette) {
+                    Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+                    Palette.Swatch lightVibrantSwatch = palette.getLightVibrantSwatch();
+                    Palette.Swatch darkVibrantSwatch = palette.getDarkVibrantSwatch();
+                    Palette.Swatch mutedSwatch = palette.getMutedSwatch();
+                    Palette.Swatch lightMutedSwatch = palette.getLightMutedSwatch();
+                    Palette.Swatch darkMutedSwatch = palette.getDarkMutedSwatch();
+                    DebugUtil.d(TAG,"vibrantSwatch = " + palette.getVibrantSwatch());
+                    DebugUtil.d(TAG,"lightVibrantSwatch = " + lightVibrantSwatch);
+                    DebugUtil.d(TAG,"darkVibrantSwatch = " + darkVibrantSwatch);
+                    DebugUtil.d(TAG,"mutedSwatch = " + mutedSwatch);
+                    DebugUtil.d(TAG,"lightMutedSwatch = " + lightMutedSwatch);
+                    DebugUtil.d(TAG,"darkMutedSwatch = " + darkMutedSwatch);
+
+                    int bgColor = 0;
+                    int textColor = 0;
+                    if(vibrantSwatch != null){
+                        bgColor = vibrantSwatch.getRgb();
+                        textColor = vibrantSwatch.getTitleTextColor();
+                    }else if(lightVibrantSwatch != null){
+                        bgColor = lightVibrantSwatch.getRgb();
+                        textColor = lightVibrantSwatch.getTitleTextColor();
+                    }else if(darkVibrantSwatch != null){
+                        bgColor = darkVibrantSwatch.getRgb();
+                        textColor = darkVibrantSwatch.getTitleTextColor();
+                    }else if(mutedSwatch != null){
+                        bgColor = mutedSwatch.getRgb();
+                        textColor = mutedSwatch.getTitleTextColor();
+                    }else if(lightMutedSwatch != null){
+                        bgColor = lightMutedSwatch.getRgb();
+                        textColor = lightMutedSwatch.getTitleTextColor();
+                    }else if(darkMutedSwatch != null){
+                        bgColor = darkMutedSwatch.getRgb();
+                        textColor = darkMutedSwatch.getTitleTextColor();
+                    }
+
+                    finalMTaoBaoAnchorViewHolder.mPaletteView.setPaletteBackgroundColor(bgColor);
+                    finalMTaoBaoAnchorViewHolder.mItemTaobaoAnchorName.setTextColor(textColor);
+                    finalMTaoBaoAnchorViewHolder.mItemTaobaoAnchorFansName.setTextColor(textColor);
+                    finalMTaoBaoAnchorViewHolder.mItemTaobaoAnchorFansCount.setTextColor(textColor);
+                }
+            });
+
+//                Glide.with(mActivity).load(mTaoBaoAnchors.get(position).anchor_img).into(mTaoBaoAnchorViewHolder.mItemTaobaoAnchorImg);
+            Glide.with(mActivity).load(getData().get(position).anchor_vflag).into(mTaoBaoAnchorViewHolder.mItemTaobaoAnchorVflag);
+            mTaoBaoAnchorViewHolder.mItemTaobaoAnchorName.setText(getData().get(position).anchor_name);
+            mTaoBaoAnchorViewHolder.mItemTaobaoAnchorFansCount.setText(getData().get(position).fans_count);
+        }
+
+        @Override
+        public void onBindFootViewHolderLoadDataSuccess(@NonNull RecyclerView.ViewHolder viewHolder) {
+            DebugUtil.d(TAG,"onBindFootViewHolderLoadDataSuccess");
+
+            TaoBaoAnchorFootViewHolder mTaoBaoAnchorFootViewHolder = (TaoBaoAnchorFootViewHolder) viewHolder;
+
+            mTaoBaoAnchorFootViewHolder.mLoadErrorView.setVisibility(View.GONE);
+            mTaoBaoAnchorFootViewHolder.mLoadingView.setVisibility(View.VISIBLE);
+
+            loadData(false,mCurrentPage + 1);
+        }
+
+        @Override
+        public void onBindFootViewHolderLoadingData(@NonNull RecyclerView.ViewHolder viewHolder) {
+            DebugUtil.d(TAG,"onBindFootViewHolderLoadingData");
+
+            TaoBaoAnchorFootViewHolder mTaoBaoAnchorFootViewHolder = (TaoBaoAnchorFootViewHolder) viewHolder;
+
+            mTaoBaoAnchorFootViewHolder.mLoadErrorView.setVisibility(View.GONE);
+            mTaoBaoAnchorFootViewHolder.mLoadingView.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onBindFootViewHolderLoadDataError(@NonNull RecyclerView.ViewHolder viewHolder) {
+            DebugUtil.d(TAG,"onBindFootViewHolderLoadDataError");
+
+            TaoBaoAnchorFootViewHolder mTaoBaoAnchorFootViewHolder = (TaoBaoAnchorFootViewHolder) viewHolder;
+
+            mTaoBaoAnchorFootViewHolder.mLoadErrorView.setVisibility(View.VISIBLE);
+            mTaoBaoAnchorFootViewHolder.mLoadingView.setVisibility(View.GONE);
+
+            View mBtnErrorRefresh = mTaoBaoAnchorFootViewHolder.mLoadErrorView.findViewById(R.id.load_error_btn);
+
+            mBtnErrorRefresh.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mTaoBaoAnchorAdapter.setLoadDataState(TaoBaoAnchorAdapter.LOADING_DATA_STATE);
+                    loadData(false, mCurrentPage + 1);
+                }
+            });
+        }
+    }
+
+
+    /*
     public class TaoBaoAnchorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
         public static final int LOADING_DATA_STATE = 1;
@@ -397,6 +519,7 @@ public class TaoBaoAnchorFragment extends BaseFragment {
             return mTaoBaoAnchors.size() + (mCurrentPage < mTotalPage - 1 ? 1 : 0);
         }
     }
+    */
 
     public class TaoBaoAnchorViewHolder extends RecyclerView.ViewHolder{
 
