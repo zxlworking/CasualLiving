@@ -17,10 +17,14 @@ import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
 import com.zxl.common.DebugUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -557,6 +561,71 @@ public class HttpUtils {
                     });
         }else{
             DebugUtil.d(TAG,"getQSBKFromCollect::net work error");
+            if(listener != null){
+                listener.onNetError();
+            }
+        }
+    }
+
+    public void uploadFile(Context context, File file, final NetRequestListener listener){
+        DebugUtil.d(TAG,"uploadFile::file = " + file.getName());
+
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        builder.addFormDataPart("file_name", file.getName());
+        builder.addFormDataPart("attach_file",  file.getName(), RequestBody.create(MediaType.parse("multipart/octet-stream"), file));
+
+        if(isNetworkAvailable(context)){
+            Call<ResponseBody> call = mHttpAPI.fileUpload(builder.build());
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    try {
+                        String s = new String(response.body().bytes());
+                        DebugUtil.d(TAG, "uploadFile::s = " + s);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
+
+//            Observable<QSBKElementList> observable = mHttpAPI.fileUpload(builder.build());
+//            observable.subscribeOn(Schedulers.io())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(new Subscriber<ResponseBaseBean>() {
+//                        @Override
+//                        public void onCompleted() {
+//                            DebugUtil.d(TAG,"uploadFile::onCompleted");
+//                        }
+//
+//                        @Override
+//                        public void onError(Throwable e) {
+//                            DebugUtil.d(TAG,"uploadFile::onError::e = " + e);
+//                            if(listener != null){
+//                                listener.onNetError(e);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onNext(ResponseBaseBean responseBaseBean) {
+//                            DebugUtil.d(TAG,"uploadFile::onNext::responseBaseBean = " + responseBaseBean);
+//                            if(responseBaseBean.code == 0){
+//                                if(listener != null){
+//                                    listener.onSuccess(responseBaseBean);
+//                                }
+//                            }else{
+//                                if(listener != null){
+//                                    listener.onServerError(responseBaseBean);
+//                                }
+//                            }
+//                        }
+//                    });
+        }else{
+            DebugUtil.d(TAG,"uploadFile::net work error");
             if(listener != null){
                 listener.onNetError();
             }

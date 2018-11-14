@@ -24,6 +24,8 @@ import com.zxl.casual.living.utils.DownloadUtils;
 import com.zxl.casual.living.utils.SharePreUtils;
 import com.zxl.common.DebugUtil;
 
+import java.io.File;
+
 /**
  * Created by zxl on 2018/9/28.
  */
@@ -45,6 +47,16 @@ public class CheckVersionFragment extends BaseFragment {
     private TextView mNewVersionTv;
     private TextView mUpdateTv;
 
+    private View mSendLogContentView;
+    private TextView mSendLogCountTv;
+    private TextView mSendLogTv;
+
+    private View mSendingLogView;
+    private TextView mSendingLogTv;
+    private View mSendLogErrorView;
+    private TextView mSendLogErrorTv;
+    private Button mSendLogErrorBtn;
+
     private boolean isLoading = false;
 
     @Nullable
@@ -64,6 +76,56 @@ public class CheckVersionFragment extends BaseFragment {
         mNewVersionTv = mContentView.findViewById(R.id.new_version_tv);
         mUpdateTv = mContentView.findViewById(R.id.update_tv);
 
+        mSendLogContentView = mContentView.findViewById(R.id.send_log_content_view);
+        mSendLogCountTv = mContentView.findViewById(R.id.send_log_count_tv);
+        mSendLogTv = mContentView.findViewById(R.id.send_log_tv);
+
+        mSendingLogView = mContentView.findViewById(R.id.sending_log_view);
+        mSendingLogTv = mSendingLogView.findViewById(R.id.loading_tv);
+        mSendLogErrorView = mContentView.findViewById(R.id.send_log_error_view);
+        mSendLogErrorTv = mSendLogErrorView.findViewById(R.id.load_error_tv);
+        mSendLogErrorBtn = mSendLogErrorView.findViewById(R.id.load_error_btn);
+
+        int crashFileCount = getCrashFileCount();
+        if(crashFileCount > 0){
+            mSendLogContentView.setVisibility(View.VISIBLE);
+            mSendLogCountTv.setText(crashFileCount + "个错误日志文件未上传");
+
+            mSendingLogView.setVisibility(View.GONE);
+            mSendLogErrorView.setVisibility(View.GONE);
+        }else{
+            mSendLogContentView.setVisibility(View.GONE);
+            mSendingLogView.setVisibility(View.GONE);
+            mSendLogErrorView.setVisibility(View.GONE);
+        }
+        mSendLogTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File file = new File(Constants.APP_CRASH_PATH);
+                File[] files = file.listFiles();
+                HttpUtils.getInstance().uploadFile(mActivity, files[0], new NetRequestListener() {
+                    @Override
+                    public void onSuccess(ResponseBaseBean responseBaseBean) {
+
+                    }
+
+                    @Override
+                    public void onNetError() {
+
+                    }
+
+                    @Override
+                    public void onNetError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onServerError(ResponseBaseBean responseBaseBean) {
+
+                    }
+                });
+            }
+        });
 
         return mContentView;
     }
@@ -74,6 +136,17 @@ public class CheckVersionFragment extends BaseFragment {
         mCurrentVersionTv.setText("当前版本：" + CommonUtils.getVersionName(mActivity));
 
         getUpdateInfo();
+    }
+
+    private int getCrashFileCount(){
+        File file = new File(Constants.APP_CRASH_PATH);
+        if(file.exists()){
+            File[] files = file.listFiles();
+            if(files != null && files.length > 0){
+                return files.length;
+            }
+        }
+        return 0;
     }
 
     private void getUpdateInfo() {

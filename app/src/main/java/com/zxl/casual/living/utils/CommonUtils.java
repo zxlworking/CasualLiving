@@ -1,5 +1,6 @@
 package com.zxl.casual.living.utils;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -10,6 +11,8 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -27,6 +30,7 @@ import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.opensdk.modelmsg.WXTextObject;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.zxl.casual.living.common.FileUtils;
 import com.zxl.common.DebugUtil;
 
 import java.io.File;
@@ -44,7 +48,7 @@ public class CommonUtils {
 
     public static IWXAPI mIwxapi;
 
-    public static String getVersionName(Context context){
+    public static String getVersionName(Context context) {
         PackageManager pm = context.getPackageManager();
         try {
             PackageInfo packageInfo = pm.getPackageInfo(context.getPackageName(), 0);
@@ -55,7 +59,7 @@ public class CommonUtils {
         return "";
     }
 
-    public static int getVersionCode(Context context){
+    public static int getVersionCode(Context context) {
         PackageManager pm = context.getPackageManager();
         try {
             PackageInfo packageInfo = pm.getPackageInfo(context.getPackageName(), 0);
@@ -64,6 +68,21 @@ public class CommonUtils {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public static String getDeviceId(Context context) {
+        TelephonyManager TelephonyMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return "";
+        }
+        return TelephonyMgr.getDeviceId();
     }
 
     public static int px2dip(int pxValue){
@@ -179,25 +198,10 @@ public class CommonUtils {
 
                     file = future.get();
 
-                    // 首先保存图片
-                    File pictureFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile();
-
-                    File appDir = new File(pictureFolder ,"test_weather");
-                    if (!appDir.exists()) {
-                        appDir.mkdirs();
-                    }
                     String fileName = bitmapUrl.substring(bitmapUrl.lastIndexOf("/"));
-                    File destFile = new File(appDir, fileName);
+                    File destFile = FileUtils.createFileAndFolder(fileName, Constants.APP_PICTURE_PATH);
 
-                    FileInputStream fis = new FileInputStream(file);
-                    FileOutputStream fos = new FileOutputStream(destFile);
-                    byte buffer[] = new byte[1024];
-                    int count = 0;
-                    while((count = fis.read(buffer)) != -1){
-                        fos.write(buffer,0,count);
-                    }
-                    fos.close();
-                    fis.close();
+                    FileUtils.appendToFile(file,destFile);
 
                     return destFile.getPath();
                 } catch (Exception e) {

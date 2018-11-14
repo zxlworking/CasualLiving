@@ -9,9 +9,14 @@ import com.zxl.casual.living.http.data.TodayWeatherResponseBean;
 import com.zxl.casual.living.http.data.UpdateInfoResponseBean;
 import com.zxl.casual.living.http.data.UserInfoResponseBean;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -52,4 +57,8 @@ public interface HttpAPI {
 
     @GET("cgi_server/cgi_weather/test7.py")
     public Observable<QSBKElementList> getQSBKFromCollect(@Query("page")int page, @Query("page_count")int page_count, @Query("collect_operator")int collect_operator, @Query("user_id")String user_id);
+
+    @POST("cgi_server/cgi_weather/test8.py")
+//    public Call<ResponseBody> fileUpload(@Body RequestBody params);
+    public Call<ResponseBody> fileUpload(@Body RequestBody params);
 }

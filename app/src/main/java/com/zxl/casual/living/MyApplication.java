@@ -2,6 +2,7 @@ package com.zxl.casual.living;
 
 import android.app.Application;
 
+import com.zxl.casual.living.common.GlobalCrashHandler;
 import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.EventBusUtils;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -19,6 +20,8 @@ public class MyApplication extends Application {
 
         DebugUtil.IS_DEBUG = DebugUtil.STATE_OPEN;
         EventBusUtils.init();
+
+        GlobalCrashHandler.getInstance(this);
 
     }
 
