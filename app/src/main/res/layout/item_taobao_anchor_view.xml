@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+    <com.zxl.casual.living.custom.view.PaletteView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:cardCornerRadius="4dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:translationZ="@dimen/cardview_default_elevation"
-    android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground">
-    <LinearLayout
+        android:id="@+id/item_taobao_anchor_palette_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="12dp"
+        android:translationZ="@dimen/cardview_default_elevation"
+        android:background="#00000000"
         android:orientation="vertical">
         <ImageView
             android:id="@+id/item_taobao_anchor_img"
@@ -22,43 +16,49 @@
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"/>
         <LinearLayout
+            android:id="@+id/item_taobao_anchor_bottom_view"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:paddingStart="8dp"
+            android:orientation="vertical">
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
                 <ImageView
                     android:id="@+id/item_taobao_anchor_vflag"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:scaleType="fitCenter"/>
                 <TextView
                     android:id="@+id/item_taobao_anchor_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="12sp"
                     android:textColor="#999999"/>
             </LinearLayout>
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
                 android:orientation="horizontal">
                 <TextView
+                    android:id="@+id/item_taobao_anchor_fans_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#999999"
+                    android:textSize="12sp"
                     android:text="粉丝："/>
                 <TextView
                     android:id="@+id/item_taobao_anchor_fans_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="12sp"
                     android:textColor="#999999"/>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</android.support.v7.widget.CardView>
+    </com.zxl.casual.living.custom.view.PaletteView>
