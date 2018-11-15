@@ -13,12 +13,18 @@ import com.zxl.casual.living.http.data.TodayWeatherResponseBean;
 import com.zxl.casual.living.http.data.UpdateInfoResponseBean;
 import com.zxl.casual.living.http.data.UserInfoResponseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
+import com.zxl.casual.living.http.retrofit.FileRequestBody;
+import com.zxl.casual.living.http.retrofit.RetrofitCallback;
 import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
 import com.zxl.common.DebugUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -567,32 +573,36 @@ public class HttpUtils {
         }
     }
 
-    public void uploadFile(Context context, File file, final NetRequestListener listener){
-        DebugUtil.d(TAG,"uploadFile::file = " + file.getName());
+    public void uploadFile(FileRequestBody fileRequestBody, final NetRequestListener listener){
 
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        builder.addFormDataPart("file_name", file.getName());
-        builder.addFormDataPart("attach_file",  file.getName(), RequestBody.create(MediaType.parse("multipart/octet-stream"), file));
+        //multipart/form-data
+        //image/png
 
-        if(isNetworkAvailable(context)){
-            Call<ResponseBody> call = mHttpAPI.fileUpload(builder.build());
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    try {
-                        String s = new String(response.body().bytes());
-                        DebugUtil.d(TAG, "uploadFile::s = " + s);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+//        List<MultipartBody.Part> parts = new ArrayList<>();
+//        for (File file : files) {
+//            DebugUtil.d(TAG,"uploadFile::file = " + file.getName());
+//            RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+//            MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+//            parts.add(part);
+//        }
 
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+//        MultipartBody.Builder builder = new MultipartBody.Builder();
+//        for (File file : files) {
+//            RequestBody requestBody = RequestBody.create(MediaType.parse("image/png"), file);
+//            builder.addFormDataPart("file", file.getName(), requestBody);
+//        }
+//        builder.setType(MultipartBody.FORM);
+//        MultipartBody multipartBody = builder.build();
+//        FileRequestBody fileRequestBody = new FileRequestBody(multipartBody,callback);
 
-                }
-            });
+//        Map<String, RequestBody> params = new HashMap<>();
+//        for (File file : files) {
+//            DebugUtil.d(TAG,"uploadFile::file = " + file.getPath());
+//            RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+//            params.put("file\"; filename=\""+ file.getName(), requestBody);
+//        }
 
+//        if(isNetworkAvailable(context)){
 //            Observable<QSBKElementList> observable = mHttpAPI.fileUpload(builder.build());
 //            observable.subscribeOn(Schedulers.io())
 //                    .observeOn(AndroidSchedulers.mainThread())
@@ -624,12 +634,45 @@ public class HttpUtils {
 //                            }
 //                        }
 //                    });
-        }else{
-            DebugUtil.d(TAG,"uploadFile::net work error");
-            if(listener != null){
-                listener.onNetError();
+//        }else{
+//            DebugUtil.d(TAG,"uploadFile::net work error");
+//            if(listener != null){
+//                listener.onNetError();
+//            }
+//        }
+
+        Call<ResponseBody> call = mHttpAPI.uploadFile(fileRequestBody);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response != null && response.body() != null){
+                    try {
+                        String s = new String(response.body().bytes());
+                        DebugUtil.d(TAG, "uploadFile::s = " + s);
+
+                        if(listener != null){
+                            listener.onSuccess(null);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+
+                        if(listener != null){
+                            listener.onNetError();
+                        }
+                    }
+                }
             }
-        }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                if(listener != null){
+                    listener.onNetError();
+                }
+            }
+        });
+
+
+
     }
 
 

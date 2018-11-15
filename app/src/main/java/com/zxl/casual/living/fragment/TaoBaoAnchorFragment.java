@@ -178,6 +178,9 @@ public class TaoBaoAnchorFragment extends BaseFragment {
         mTaoBaoAnchorAdapter = new TaoBaoAnchorAdapter();
         mRecyclerView.setAdapter(mTaoBaoAnchorAdapter);
 
+//        Object obj = null;
+//        obj.toString();
+
         loadData(true, 1);
     }
 

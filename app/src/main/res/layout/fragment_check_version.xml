@@ -114,6 +114,13 @@
                 android:layout_gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">
+                <ProgressBar
+                    android:id="@+id/send_log_progress_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:visibility="gone"/>
                 <TextView
                     android:id="@+id/send_log_count_tv"
                     android:layout_width="match_parent"

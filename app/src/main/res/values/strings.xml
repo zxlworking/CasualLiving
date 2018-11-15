@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">休闲生活</string>
+    <string name="app_name">我的休闲生活</string>
 
     <string name="retry">重试</string>
     <string name="loading_data">加载中...</string>

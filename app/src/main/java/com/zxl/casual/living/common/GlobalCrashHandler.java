@@ -79,7 +79,7 @@ public class GlobalCrashHandler implements Thread.UncaughtExceptionHandler {
         } else {
             // 程序休眠1s后退出
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -202,7 +202,7 @@ public class GlobalCrashHandler implements Thread.UncaughtExceptionHandler {
     protected void saveToCrashFile(String crashText) {
         DebugUtil.d(TAG,"GlobalCrashHandler is writing crash-info to CrashFile! ");
 
-        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
         String date = sf.format(new Date());
 
         // 创建文件（自己写的操作文件相关的工具类）

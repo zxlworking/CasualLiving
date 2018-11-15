@@ -10,21 +10,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zxl.casual.living.R;
+import com.zxl.casual.living.common.UploadLogFileTask;
+import com.zxl.casual.living.event.UploadLogFileEvent;
 import com.zxl.casual.living.http.HttpUtils;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.data.UpdateInfoResponseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
+import com.zxl.casual.living.http.retrofit.RetrofitCallback;
 import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
 import com.zxl.casual.living.utils.DownloadUtils;
+import com.zxl.casual.living.utils.EventBusUtils;
 import com.zxl.casual.living.utils.SharePreUtils;
 import com.zxl.common.DebugUtil;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.File;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * Created by zxl on 2018/9/28.
@@ -48,6 +59,7 @@ public class CheckVersionFragment extends BaseFragment {
     private TextView mUpdateTv;
 
     private View mSendLogContentView;
+    private ProgressBar mSendLogProgressBar;
     private TextView mSendLogCountTv;
     private TextView mSendLogTv;
 
@@ -62,6 +74,9 @@ public class CheckVersionFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        EventBusUtils.register(this);
+
         mContentView = inflater.inflate(R.layout.fragment_check_version,null);
 
         mLoadingView = mContentView.findViewById(R.id.loading_view);
@@ -77,6 +92,7 @@ public class CheckVersionFragment extends BaseFragment {
         mUpdateTv = mContentView.findViewById(R.id.update_tv);
 
         mSendLogContentView = mContentView.findViewById(R.id.send_log_content_view);
+        mSendLogProgressBar = mContentView.findViewById(R.id.send_log_progress_bar);
         mSendLogCountTv = mContentView.findViewById(R.id.send_log_count_tv);
         mSendLogTv = mContentView.findViewById(R.id.send_log_tv);
 
@@ -90,9 +106,11 @@ public class CheckVersionFragment extends BaseFragment {
         if(crashFileCount > 0){
             mSendLogContentView.setVisibility(View.VISIBLE);
             mSendLogCountTv.setText(crashFileCount + "个错误日志文件未上传");
-
-            mSendingLogView.setVisibility(View.GONE);
-            mSendLogErrorView.setVisibility(View.GONE);
+            if(UploadLogFileTask.isStart()){
+                mSendLogProgressBar.setVisibility(View.VISIBLE);
+            }else{
+                mSendLogProgressBar.setVisibility(View.GONE);
+            }
         }else{
             mSendLogContentView.setVisibility(View.GONE);
             mSendingLogView.setVisibility(View.GONE);
@@ -101,29 +119,31 @@ public class CheckVersionFragment extends BaseFragment {
         mSendLogTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file = new File(Constants.APP_CRASH_PATH);
-                File[] files = file.listFiles();
-                HttpUtils.getInstance().uploadFile(mActivity, files[0], new NetRequestListener() {
-                    @Override
-                    public void onSuccess(ResponseBaseBean responseBaseBean) {
+                UploadLogFileTask.start();
+            }
+        });
 
-                    }
+        UploadLogFileTask.setNetRequestListener(new NetRequestListener() {
+            @Override
+            public void onSuccess(ResponseBaseBean responseBaseBean) {
 
-                    @Override
-                    public void onNetError() {
+            }
 
-                    }
+            @Override
+            public void onNetError() {
+                if(mActivity != null && !mActivity.isFinishing()){
+                    Toast.makeText(mActivity,"上传出错了!",Toast.LENGTH_SHORT).show();
+                }
+            }
 
-                    @Override
-                    public void onNetError(Throwable e) {
+            @Override
+            public void onNetError(Throwable e) {
 
-                    }
+            }
 
-                    @Override
-                    public void onServerError(ResponseBaseBean responseBaseBean) {
+            @Override
+            public void onServerError(ResponseBaseBean responseBaseBean) {
 
-                    }
-                });
             }
         });
 
@@ -237,5 +257,35 @@ public class CheckVersionFragment extends BaseFragment {
                 isLoading = false;
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBusUtils.unregister(this);
+        UploadLogFileTask.setNetRequestListener(null);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUploadLogFileEvent(UploadLogFileEvent event){
+        int crashFileCount = getCrashFileCount();
+        if(crashFileCount > 0){
+            mSendLogContentView.setVisibility(View.VISIBLE);
+            mSendLogCountTv.setText(crashFileCount + "个错误日志文件上传中...");
+            if(UploadLogFileTask.isStart()){
+                mSendLogProgressBar.setVisibility(View.VISIBLE);
+                mSendLogProgressBar.setProgress((int) (event.mProgress *  100 / event.mTotal));
+            }else{
+                mSendLogProgressBar.setVisibility(View.GONE);
+            }
+        }else{
+            mSendLogContentView.setVisibility(View.GONE);
+            mSendingLogView.setVisibility(View.GONE);
+            mSendLogErrorView.setVisibility(View.GONE);
+
+            if(mActivity != null && !mActivity.isFinishing()){
+                Toast.makeText(mActivity,"上传完成!",Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
