@@ -1,7 +1,9 @@
 package com.zxl.casual.living.utils;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -36,6 +38,8 @@ import com.zxl.common.DebugUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CommonUtils {
@@ -257,5 +261,22 @@ public class CommonUtils {
         req.message = wxMediaMessage;
         req.scene = scene;
         CommonUtils.sendWXMessage(req);
+    }
+
+    public static final void shareWXBitmapAndText(Context context,String text){
+//        String SHARE_IMG_UI = "com.tencent.mm.ui.tools.ShareImgUI";
+//        String SHARE_TO_TIMELINE_UI = "com.tencent.mm.ui.tools.ShareToTimeLineUI";
+//
+//        ArrayList<String> strArrayList = new ArrayList<>();
+//        strArrayList.add(text);
+//
+//        Intent intent = new Intent();
+//        intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+//        intent.setComponent(new ComponentName("com.tencent.mm", SHARE_TO_TIMELINE_UI));
+//        intent.setType("image/*");
+//        intent.putStringArrayListExtra(Intent.EXTRA_TEXT, strArrayList);
+//        intent.putExtra("Kdescription", text);
+//        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uriList));
+//        context.startActivity(intent);
     }
 }
