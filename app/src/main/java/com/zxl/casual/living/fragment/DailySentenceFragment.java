@@ -1,6 +1,8 @@
 package com.zxl.casual.living.fragment;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -12,15 +14,20 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.zxl.casual.living.GlideApp;
 import com.zxl.casual.living.R;
 import com.zxl.casual.living.http.HttpUtils;
 import com.zxl.casual.living.http.data.DailySentenceResponseBean;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
+import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.SharePreUtils;
 import com.zxl.common.DebugUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -38,6 +45,9 @@ public class DailySentenceFragment extends BaseFragment {
     private View mLoadErrorView;
     private Button mBtnErrorRefresh;
 
+    public ImageView mShareWechatFriendImg;
+    public ImageView mShareWechatFriendsImg;
+
     private View mDailySentenceContentView;
     private ImageView mDailySentenceImg;
 
@@ -53,8 +63,25 @@ public class DailySentenceFragment extends BaseFragment {
         mLoadErrorView = mContentView.findViewById(R.id.load_error_view);
         mBtnErrorRefresh = mLoadErrorView.findViewById(R.id.load_error_btn);
 
+        mShareWechatFriendImg = mContentView.findViewById(R.id.share_wechat_friend_img);
+        mShareWechatFriendsImg = mContentView.findViewById(R.id.share_wechat_friends_img);
+
         mDailySentenceContentView = mContentView.findViewById(R.id.daily_sentence_content_view);
         mDailySentenceImg = mContentView.findViewById(R.id.daily_sentence_img);
+
+        mShareWechatFriendImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CommonUtils.shareWXBitmap(mActivity, SharePreUtils.getInstance(mActivity).getDailySentence().fenxiang_img, SendMessageToWX.Req.WXSceneTimeline);
+            }
+        });
+
+        mShareWechatFriendsImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CommonUtils.shareWXBitmap(mActivity, SharePreUtils.getInstance(mActivity).getDailySentence().fenxiang_img, SendMessageToWX.Req.WXSceneSession);
+            }
+        });
 
         mBtnErrorRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
