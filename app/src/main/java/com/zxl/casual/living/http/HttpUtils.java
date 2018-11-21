@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.text.TextUtils;
 
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
+import com.zxl.casual.living.http.data.DailySentenceResponseBean;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.data.TaoBaoAnchorListResponseBean;
@@ -54,23 +55,33 @@ public class HttpUtils {
 
     private static Object mLock = new Object();
 
-    private static Retrofit mRetrofit;
     private static HttpAPI mHttpAPI;
+    private static DailySentenceHttpAPI mDailySentenceHttpAPI;
 
     private HttpUtils(){
         OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
         okBuilder.connectTimeout(1, TimeUnit.MINUTES);
         okBuilder.readTimeout(1,TimeUnit.MINUTES);
         OkHttpClient okHttpClient = okBuilder.build();
+
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder();
-        Retrofit mRetrofit = retrofitBuilder
+        Retrofit retrofit = retrofitBuilder
 //                .baseUrl("http://www.zxltest.cn/cgi_server/")
                 .baseUrl(Constants.WEATHER_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(okHttpClient)
                 .build();
-        mHttpAPI = mRetrofit.create(HttpAPI.class);
+        mHttpAPI = retrofit.create(HttpAPI.class);
+
+        Retrofit.Builder dailySentenceRetrofitBuilder = new Retrofit.Builder();
+        Retrofit dailySentenceRetrofit = dailySentenceRetrofitBuilder
+                .baseUrl(Constants.DAILY_SENTENCE_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .client(okHttpClient)
+                .build();
+        mDailySentenceHttpAPI = dailySentenceRetrofit.create(DailySentenceHttpAPI.class);
     }
 
     public static HttpUtils getInstance(){
@@ -670,9 +681,71 @@ public class HttpUtils {
                 }
             }
         });
+    }
+
+    public void getDailySentence(Context context, final NetRequestListener listener){
+        DebugUtil.d(TAG,"getDailySentence");
+
+        if(isNetworkAvailable(context)){
+//            Call<ResponseBody> call = mDailySentenceHttpAPI.getDailySentence();
+//            call.enqueue(new Callback<ResponseBody>() {
+//                @Override
+//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                    try {
+//                        String s = new String(response.body().bytes());
+//                        DebugUtil.d(TAG, "getDailySentence::s = " + s);
+//
+//                        DailySentenceResponseBean dailySentenceResponseBean = CommonUtils.mGson.fromJson(s, DailySentenceResponseBean.class);
+//                        DebugUtil.d(TAG, "getDailySentence::dailySentenceResponseBean = " + dailySentenceResponseBean);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<ResponseBody> call, Throwable t) {
+//
+//                }
+//            });
 
 
+            Observable<DailySentenceResponseBean> observable = mDailySentenceHttpAPI.getDailySentence();
+            observable.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<ResponseBaseBean>() {
+                        @Override
+                        public void onCompleted() {
+                            DebugUtil.d(TAG,"getDailySentence::onCompleted");
+                        }
 
+                        @Override
+                        public void onError(Throwable e) {
+                            DebugUtil.d(TAG,"getDailySentence::onError::e = " + e);
+                            if(listener != null){
+                                listener.onNetError(e);
+                            }
+                        }
+
+                        @Override
+                        public void onNext(ResponseBaseBean responseBaseBean) {
+                            DebugUtil.d(TAG,"getDailySentence::onNext::responseBaseBean = " + responseBaseBean);
+                            if(responseBaseBean.code == 0){
+                                if(listener != null){
+                                    listener.onSuccess(responseBaseBean);
+                                }
+                            }else{
+                                if(listener != null){
+                                    listener.onServerError(responseBaseBean);
+                                }
+                            }
+                        }
+                    });
+        }else{
+            DebugUtil.d(TAG,"getDailySentence::net work error");
+            if(listener != null){
+                listener.onNetError();
+            }
+        }
     }
 
 

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
+import com.zxl.casual.living.http.data.DailySentenceResponseBean;
 import com.zxl.casual.living.http.data.UserInfoResponseBean;
 
 /**
@@ -80,4 +81,22 @@ public class SharePreUtils {
         return mSharedPreferences.getLong("DownloadId",0);
     }
 
+    public void saveDailySentence(DailySentenceResponseBean dailySentenceResponseBean){
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        if(dailySentenceResponseBean != null){
+            editor.putString("DailySentence",CommonUtils.mGson.toJson(dailySentenceResponseBean));
+        }else{
+            editor.putString("DailySentence","");
+        }
+        editor.commit();
+    }
+
+    public DailySentenceResponseBean getDailySentence(){
+        String str = mSharedPreferences.getString("DailySentence","");
+        if(TextUtils.isEmpty(str)){
+            return null;
+        }else{
+            return CommonUtils.mGson.fromJson(str,DailySentenceResponseBean.class);
+        }
+    }
 }

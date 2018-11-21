@@ -279,7 +279,7 @@
                             android:id="@+id/today_weather_detail_1_wind_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="8sp"
+                            android:textSize="6sp"
                             android:gravity="center"/>
                     </LinearLayout>
 
@@ -400,7 +400,7 @@
                             android:id="@+id/today_weather_detail_2_wind_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="8sp"
+                            android:textSize="6sp"
                             android:gravity="center"/>
                     </LinearLayout>
 

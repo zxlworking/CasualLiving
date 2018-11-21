@@ -29,6 +29,7 @@ import com.zxl.casual.living.event.SelectLeftMenuEvent;
 import com.zxl.casual.living.fragment.AccountFragment;
 import com.zxl.casual.living.fragment.CheckVersionFragment;
 import com.zxl.casual.living.fragment.CollectQSBKFragment;
+import com.zxl.casual.living.fragment.DailySentenceFragment;
 import com.zxl.casual.living.fragment.LeftMenuFragment;
 import com.zxl.casual.living.fragment.QSBKFragment;
 import com.zxl.casual.living.fragment.TaoBaoAnchorFragment;
@@ -166,16 +167,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void initContentFragments(){
         mContentFragments.clear();
-        QSBKFragment mQSBKFragment = (QSBKFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.QSBKFragment");
-        mContentFragments.add(mQSBKFragment);
-        TaoBaoAnchorFragment mTaoBaoAnchorFragment = (TaoBaoAnchorFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.TaoBaoAnchorFragment");
-        mContentFragments.add(mTaoBaoAnchorFragment);
-        CollectQSBKFragment mCollectQSBKFragment = (CollectQSBKFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.CollectQSBKFragment");
-        mContentFragments.add(mCollectQSBKFragment);
-        AccountFragment mAccountFragment = (AccountFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.AccountFragment");
-        mContentFragments.add(mAccountFragment);
-        CheckVersionFragment mCheckVersionFragment = (CheckVersionFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.CheckVersionFragment");
-        mContentFragments.add(mCheckVersionFragment);
+        DailySentenceFragment dailySentenceFragment = (DailySentenceFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.DailySentenceFragment");
+        mContentFragments.add(dailySentenceFragment);
+        QSBKFragment qSBKFragment = (QSBKFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.QSBKFragment");
+        mContentFragments.add(qSBKFragment);
+        TaoBaoAnchorFragment taoBaoAnchorFragment = (TaoBaoAnchorFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.TaoBaoAnchorFragment");
+        mContentFragments.add(taoBaoAnchorFragment);
+        CollectQSBKFragment collectQSBKFragment = (CollectQSBKFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.CollectQSBKFragment");
+        mContentFragments.add(collectQSBKFragment);
+        AccountFragment accountFragment = (AccountFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.AccountFragment");
+        mContentFragments.add(accountFragment);
+        CheckVersionFragment checkVersionFragment = (CheckVersionFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.CheckVersionFragment");
+        mContentFragments.add(checkVersionFragment);
     }
 
     private void showContentFragment(int index){
@@ -258,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                 mLeftMenuPositionStack.pop();
                 position = mLeftMenuPositionStack.get(mLeftMenuPositionStack.size() - 1);
 
-                if(position == Constants.LEFT_MENU_POSITION_2 && SharePreUtils.getInstance(mContext).getUserInfo() == null){
+                if(position == Constants.LEFT_MENU_POSITION_3 && SharePreUtils.getInstance(mContext).getUserInfo() == null){
                     mLeftMenuPositionStack.pop();
                     position = mLeftMenuPositionStack.get(mLeftMenuPositionStack.size() - 1);
                 }
