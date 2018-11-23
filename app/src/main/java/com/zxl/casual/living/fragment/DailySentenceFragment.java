@@ -160,7 +160,7 @@ public class DailySentenceFragment extends BaseFragment {
 
             @Override
             public void onNetError(Throwable e) {
-                Toast.makeText(mActivity,R.string.network_error_tip,Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity,getResources().getString(R.string.network_error_tip,e.toString()),Toast.LENGTH_SHORT).show();
 
                 mDailySentenceContentView.setVisibility(View.GONE);
                 mLoadingView.setVisibility(View.GONE);
@@ -170,8 +170,9 @@ public class DailySentenceFragment extends BaseFragment {
 
             @Override
             public void onServerError(ResponseBaseBean responseBaseBean) {
-                Toast.makeText(mActivity,R.string.network_error_tip,Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity,getResources().getString(R.string.network_error_tip,responseBaseBean.desc),Toast.LENGTH_SHORT).show();
 
+                mDailySentenceContentView.setVisibility(View.GONE);
                 mLoadingView.setVisibility(View.GONE);
                 mLoadErrorView.setVisibility(View.VISIBLE);
                 isLogining = false;

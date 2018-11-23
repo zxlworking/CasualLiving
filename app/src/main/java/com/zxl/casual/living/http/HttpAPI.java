@@ -2,8 +2,10 @@ package com.zxl.casual.living.http;
 
 
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
+import com.zxl.casual.living.http.data.MusicInfoResponseBean;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
+import com.zxl.casual.living.http.data.SearchMusicListInfo;
 import com.zxl.casual.living.http.data.TaoBaoAnchorListResponseBean;
 import com.zxl.casual.living.http.data.TodayWeatherResponseBean;
 import com.zxl.casual.living.http.data.UpdateInfoResponseBean;
@@ -76,4 +78,17 @@ public interface HttpAPI {
 //    @Headers("Content-Type: multipart/form-data; boundary=------------xxxxx")
 //    @POST("cgi_server/cgi_weather/test8.py")
 //    Call<ResponseBody> uploadFile(@PartMap Map<String, RequestBody> params);
+
+    //http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.catalogSug&query=一次就好
+    @GET("cgi_server/cgi_weather/test9.py")
+    public Observable<MusicInfoResponseBean<SearchMusicListInfo>> searchMusicList(@Query("muscic_method")String muscic_method, @Query("muscic_param_key")String muscic_param_key, @Query("music_param_value")String music_param_value);
+//    public Call<ResponseBody> getMusicInfo(@Query("muscic_method")String muscic_method, @Query("muscic_param_key")String muscic_param_key, @Query("music_param_value")String music_param_value);
+    /*
+    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.catalogSug&query=一次就好
+    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.play&songid=256002518
+    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.playAAC&songid=256002518
+    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.lry&songid=256002518
+
+    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.play&songid=256002518
+     */
 }

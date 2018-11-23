@@ -31,6 +31,7 @@ import com.zxl.casual.living.fragment.CheckVersionFragment;
 import com.zxl.casual.living.fragment.CollectQSBKFragment;
 import com.zxl.casual.living.fragment.DailySentenceFragment;
 import com.zxl.casual.living.fragment.LeftMenuFragment;
+import com.zxl.casual.living.fragment.MusicFragment;
 import com.zxl.casual.living.fragment.QSBKFragment;
 import com.zxl.casual.living.fragment.TaoBaoAnchorFragment;
 import com.zxl.casual.living.http.data.TodayWeather;
@@ -169,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
         mContentFragments.clear();
         DailySentenceFragment dailySentenceFragment = (DailySentenceFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.DailySentenceFragment");
         mContentFragments.add(dailySentenceFragment);
+        MusicFragment musicFragment = (MusicFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.MusicFragment");
+        mContentFragments.add(musicFragment);
         QSBKFragment qSBKFragment = (QSBKFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.QSBKFragment");
         mContentFragments.add(qSBKFragment);
         TaoBaoAnchorFragment taoBaoAnchorFragment = (TaoBaoAnchorFragment) Fragment.instantiate(mContext,"com.zxl.casual.living.fragment.TaoBaoAnchorFragment");
@@ -261,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                 mLeftMenuPositionStack.pop();
                 position = mLeftMenuPositionStack.get(mLeftMenuPositionStack.size() - 1);
 
-                if(position == Constants.LEFT_MENU_POSITION_3 && SharePreUtils.getInstance(mContext).getUserInfo() == null){
+                if(position == Constants.LEFT_MENU_COLLECT_POSITION && SharePreUtils.getInstance(mContext).getUserInfo() == null){
                     mLeftMenuPositionStack.pop();
                     position = mLeftMenuPositionStack.get(mLeftMenuPositionStack.size() - 1);
                 }
