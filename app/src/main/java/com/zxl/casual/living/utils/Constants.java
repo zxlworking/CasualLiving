@@ -24,6 +24,8 @@ public class Constants {
     public static final String MUSIC_BASE_URL = "http://tingapi.ting.baidu.com/";
     public static final String MUSIC_SEARCH_METHOD = "baidu.ting.search.catalogSug";
     public static final String MUSIC_SEARCH_KEY_PARAM = "query";
+    public static final String MUSIC_GET_INFO_METHOD = "baidu.ting.song.play";
+    public static final String MUSIC_GET_INFO_KEY_PARAM = "songid";
 
     public static final String UPDATE_APP_NAME = "com.zxl.casual.living_update";
 

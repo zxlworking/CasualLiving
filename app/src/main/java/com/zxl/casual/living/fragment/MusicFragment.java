@@ -24,6 +24,7 @@ import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.zxl.casual.living.R;
 import com.zxl.casual.living.http.HttpUtils;
 import com.zxl.casual.living.http.data.DailySentenceResponseBean;
+import com.zxl.casual.living.http.data.MusicInfo;
 import com.zxl.casual.living.http.data.MusicInfoResponseBean;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.data.SearchMusicListInfo;
@@ -167,6 +168,62 @@ public class MusicFragment extends BaseFragment {
         });
     }
 
+    private void getMusicInfo(String songId) {
+
+        if(isLogining){
+            return;
+        }
+        isLogining = true;
+
+        mMusicContentView.setVisibility(View.VISIBLE);
+        mLoadingView.setVisibility(View.VISIBLE);
+        mLoadErrorView.setVisibility(View.GONE);
+
+        HttpUtils.getInstance().getMusicInfo(mActivity, Constants.MUSIC_GET_INFO_METHOD, Constants.MUSIC_GET_INFO_KEY_PARAM, songId, new NetRequestListener() {
+            @Override
+            public void onSuccess(ResponseBaseBean responseBaseBean) {
+
+                MusicInfoResponseBean<MusicInfo> musicInfoResponseBean = (MusicInfoResponseBean<MusicInfo>) responseBaseBean;
+//                mMusicInfoListAdapter.setSearchMusicListInfo(musicInfoResponseBean.result);
+
+                mMusicContentView.setVisibility(View.VISIBLE);
+                mLoadingView.setVisibility(View.GONE);
+                mLoadErrorView.setVisibility(View.GONE);
+
+                isLogining = false;
+            }
+
+            @Override
+            public void onNetError() {
+                Toast.makeText(mActivity,R.string.no_network_tip,Toast.LENGTH_SHORT).show();
+
+                mMusicContentView.setVisibility(View.GONE);
+                mLoadingView.setVisibility(View.GONE);
+                mLoadErrorView.setVisibility(View.VISIBLE);
+                isLogining = false;
+            }
+
+            @Override
+            public void onNetError(Throwable e) {
+                Toast.makeText(mActivity,getResources().getString(R.string.network_error_tip,e.toString()),Toast.LENGTH_SHORT).show();
+
+                mMusicContentView.setVisibility(View.GONE);
+                mLoadingView.setVisibility(View.GONE);
+                mLoadErrorView.setVisibility(View.VISIBLE);
+                isLogining = false;
+            }
+
+            @Override
+            public void onServerError(ResponseBaseBean responseBaseBean) {
+                Toast.makeText(mActivity,getResources().getString(R.string.network_error_tip,responseBaseBean.desc),Toast.LENGTH_SHORT).show();
+
+                mLoadingView.setVisibility(View.GONE);
+                mLoadErrorView.setVisibility(View.VISIBLE);
+                isLogining = false;
+            }
+        });
+    }
+
     class MusicInfoListAdapter extends RecyclerView.Adapter<MusicInfoListViewHolder>{
 
         private SearchMusicListInfo mSearchMusicListInfo;
@@ -186,10 +243,17 @@ public class MusicFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(@NonNull MusicInfoListViewHolder musicInfoListViewHolder, int poistion) {
-            SearchMusicListInfo.Song song = mSearchMusicListInfo.song.get(poistion);
+            final SearchMusicListInfo.Song song = mSearchMusicListInfo.song.get(poistion);
 
             musicInfoListViewHolder.mItemMusicListInfoSongNameTv.setText(song.songname);
             musicInfoListViewHolder.mItemMusicListInfoArtistNameTv.setText(song.artistname);
+
+            musicInfoListViewHolder.mItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getMusicInfo(song.songid);
+                }
+            });
         }
 
         @Override

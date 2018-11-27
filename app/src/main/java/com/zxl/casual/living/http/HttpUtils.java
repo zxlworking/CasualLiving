@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.google.gson.JsonObject;
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
 import com.zxl.casual.living.http.data.DailySentenceResponseBean;
+import com.zxl.casual.living.http.data.MusicInfo;
 import com.zxl.casual.living.http.data.MusicInfoResponseBean;
 import com.zxl.casual.living.http.data.ParameterizedTypeImpl;
 import com.zxl.casual.living.http.data.QSBKElementList;
@@ -821,6 +822,49 @@ public class HttpUtils {
                     });
         }else{
             DebugUtil.d(TAG,"searchMusicList::net work error");
+            if(listener != null){
+                listener.onNetError();
+            }
+        }
+    }
+
+    public void getMusicInfo(Context context, String muscic_method, String muscic_param_key, String music_param_value, final NetRequestListener listener){
+        DebugUtil.d(TAG,"getMusicInfo::muscic_method = " + muscic_method + "::muscic_param_key = " + muscic_param_key + "::music_param_value = " + music_param_value);
+
+        if(isNetworkAvailable(context)){
+            Observable<MusicInfoResponseBean<MusicInfo>> observable = mHttpAPI.getMusicInfo(muscic_method,muscic_param_key,music_param_value);
+            observable.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<ResponseBaseBean>() {
+                        @Override
+                        public void onCompleted() {
+                            DebugUtil.d(TAG,"getMusicInfo::onCompleted");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            DebugUtil.d(TAG,"getMusicInfo::onError::e = " + e);
+                            if(listener != null){
+                                listener.onNetError(e);
+                            }
+                        }
+
+                        @Override
+                        public void onNext(ResponseBaseBean responseBaseBean) {
+                            DebugUtil.d(TAG,"getMusicInfo::onNext::responseBaseBean = " + responseBaseBean);
+                            if(responseBaseBean.code == 0){
+                                if(listener != null){
+                                    listener.onSuccess(responseBaseBean);
+                                }
+                            }else{
+                                if(listener != null){
+                                    listener.onServerError(responseBaseBean);
+                                }
+                            }
+                        }
+                    });
+        }else{
+            DebugUtil.d(TAG,"getMusicInfo::net work error");
             if(listener != null){
                 listener.onNetError();
             }
