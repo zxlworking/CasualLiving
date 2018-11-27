@@ -1,6 +1,6 @@
 package com.zxl.casual.living.http.data;
 
-public class MusicInfo {
+public class MusicDetailInfo {
     /**
      {
      "songinfo":{
@@ -167,7 +167,7 @@ public class MusicInfo {
 
     @Override
     public String toString() {
-        return "MusicInfo{" +
+        return "MusicDetailInfo{" +
                 "songinfo=" + songinfo +
                 ", error_code=" + error_code +
                 ", bitrate=" + bitrate +

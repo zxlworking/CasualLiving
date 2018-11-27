@@ -3,44 +3,27 @@ package com.zxl.casual.living.http;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.text.TextUtils;
 
-import com.google.gson.JsonObject;
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
 import com.zxl.casual.living.http.data.DailySentenceResponseBean;
-import com.zxl.casual.living.http.data.MusicInfo;
+import com.zxl.casual.living.http.data.MusicDetailInfo;
 import com.zxl.casual.living.http.data.MusicInfoResponseBean;
-import com.zxl.casual.living.http.data.ParameterizedTypeImpl;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
-import com.zxl.casual.living.http.data.SearchMusicListInfo;
+import com.zxl.casual.living.http.data.MusicSearchResult;
 import com.zxl.casual.living.http.data.TaoBaoAnchorListResponseBean;
 import com.zxl.casual.living.http.data.TodayWeatherResponseBean;
 import com.zxl.casual.living.http.data.UpdateInfoResponseBean;
 import com.zxl.casual.living.http.data.UserInfoResponseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
 import com.zxl.casual.living.http.retrofit.FileRequestBody;
-import com.zxl.casual.living.http.retrofit.RetrofitCallback;
-import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
 import com.zxl.common.DebugUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -757,8 +740,8 @@ public class HttpUtils {
         }
     }
 
-    public void searchMusicList(Context context, String muscic_method, String muscic_param_key, String music_param_value, final NetRequestListener listener){
-        DebugUtil.d(TAG,"searchMusicList::muscic_method = " + muscic_method + "::muscic_param_key = " + muscic_param_key + "::music_param_value = " + music_param_value);
+    public void searchMusicList(Context context, String param, final NetRequestListener listener){
+        DebugUtil.d(TAG,"searchMusicList::param = " + param);
 
         if(isNetworkAvailable(context)){
 //            Call<ResponseBody> call = mHttpAPI.getMusicInfo(muscic_method,muscic_param_key,music_param_value);
@@ -769,14 +752,14 @@ public class HttpUtils {
 //                        String s = new String(response.body().bytes());
 //                        DebugUtil.d(TAG, "searchMusicList::s = " + s);
 //
-//                        Type searchMusicListInfoType = new ParameterizedTypeImpl(SearchMusicListInfo.class, null);
+//                        Type searchMusicListInfoType = new ParameterizedTypeImpl(MusicSearchResult.class, null);
 //                        //Type mMPageObjectType = new ParameterizedTypeImpl(MPageObject.class, new Type[]{mAppType});
 //                        Type musicInfoResponseBeanType = new ParameterizedTypeImpl(MusicInfoResponseBean.class, new Type[]{searchMusicListInfoType});
 //
 ////                        Gson mGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
 ////                        HttpResultBean<App> mHttpResultBean = mGson.fromJson(target,mHttpResultBeanType);
 //
-//                        MusicInfoResponseBean<SearchMusicListInfo> musicInfoResponseBean = CommonUtils.mGson.fromJson(s, musicInfoResponseBeanType);
+//                        MusicInfoResponseBean<MusicSearchResult> musicInfoResponseBean = CommonUtils.mGson.fromJson(s, musicInfoResponseBeanType);
 //                        DebugUtil.d(TAG, "searchMusicList::musicInfoResponseBean = " + musicInfoResponseBean);
 //
 //                    } catch (IOException e) {
@@ -789,7 +772,7 @@ public class HttpUtils {
 //
 //                }
 //            });
-            Observable<MusicInfoResponseBean<SearchMusicListInfo>> observable = mHttpAPI.searchMusicList(muscic_method,muscic_param_key,music_param_value);
+            Observable<MusicInfoResponseBean<MusicSearchResult>> observable = mHttpAPI.searchMusicList(param);
             observable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<ResponseBaseBean>() {
@@ -828,22 +811,22 @@ public class HttpUtils {
         }
     }
 
-    public void getMusicInfo(Context context, String muscic_method, String muscic_param_key, String music_param_value, final NetRequestListener listener){
-        DebugUtil.d(TAG,"getMusicInfo::muscic_method = " + muscic_method + "::muscic_param_key = " + muscic_param_key + "::music_param_value = " + music_param_value);
+    public void getMusicDetailInfo(Context context, String param, final NetRequestListener listener){
+        DebugUtil.d(TAG,"getMusicDetailInfo::param = " + param);
 
         if(isNetworkAvailable(context)){
-            Observable<MusicInfoResponseBean<MusicInfo>> observable = mHttpAPI.getMusicInfo(muscic_method,muscic_param_key,music_param_value);
+            Observable<MusicInfoResponseBean<MusicDetailInfo>> observable = mHttpAPI.getMusicDetailInfo(param);
             observable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<ResponseBaseBean>() {
                         @Override
                         public void onCompleted() {
-                            DebugUtil.d(TAG,"getMusicInfo::onCompleted");
+                            DebugUtil.d(TAG,"getMusicDetailInfo::onCompleted");
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            DebugUtil.d(TAG,"getMusicInfo::onError::e = " + e);
+                            DebugUtil.d(TAG,"getMusicDetailInfo::onError::e = " + e);
                             if(listener != null){
                                 listener.onNetError(e);
                             }
@@ -851,7 +834,7 @@ public class HttpUtils {
 
                         @Override
                         public void onNext(ResponseBaseBean responseBaseBean) {
-                            DebugUtil.d(TAG,"getMusicInfo::onNext::responseBaseBean = " + responseBaseBean);
+                            DebugUtil.d(TAG,"getMusicDetailInfo::onNext::responseBaseBean = " + responseBaseBean);
                             if(responseBaseBean.code == 0){
                                 if(listener != null){
                                     listener.onSuccess(responseBaseBean);
@@ -864,7 +847,40 @@ public class HttpUtils {
                         }
                     });
         }else{
-            DebugUtil.d(TAG,"getMusicInfo::net work error");
+            DebugUtil.d(TAG,"getMusicDetailInfo::net work error");
+            if(listener != null){
+                listener.onNetError();
+            }
+        }
+    }
+
+    public void getMusicListByType(Context context, String param, final NetRequestListener listener){
+        DebugUtil.d(TAG,"getMusicListByType::param = " + param);
+
+        if(isNetworkAvailable(context)){
+            Call<ResponseBody> call = mHttpAPI.getMusicListByType(param);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response == null || response.body() == null){
+                        DebugUtil.d(TAG, "getMusicListByType::response null");
+                    }else{
+                        try {
+                            String s = new String(response.body().bytes());
+                            DebugUtil.d(TAG, "getMusicListByType::s = " + s);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    DebugUtil.d(TAG,"getMusicListByType::onFailure::t = " + t.toString());
+                }
+            });
+        }else{
+            DebugUtil.d(TAG,"getMusicListByType::net work error");
             if(listener != null){
                 listener.onNetError();
             }

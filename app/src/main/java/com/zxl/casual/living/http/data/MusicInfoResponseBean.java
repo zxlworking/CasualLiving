@@ -5,7 +5,7 @@ package com.zxl.casual.living.http.data;
  */
 
 public class MusicInfoResponseBean<T> extends ResponseBaseBean{
-    public String music_method = "";
+    public String param = "";
     public T result;
 
     @Override
@@ -15,7 +15,7 @@ public class MusicInfoResponseBean<T> extends ResponseBaseBean{
                 ", desc='" + desc + '\'' +
                 ", code=" + code +
                 ", desc='" + desc + '\'' +
-                ", music_method='" + music_method + '\'' +
+                ", music_method='" + param + '\'' +
                 ", result=" + result +
                 '}';
     }

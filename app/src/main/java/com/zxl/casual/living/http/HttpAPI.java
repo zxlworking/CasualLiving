@@ -2,32 +2,23 @@ package com.zxl.casual.living.http;
 
 
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
-import com.zxl.casual.living.http.data.MusicInfo;
+import com.zxl.casual.living.http.data.MusicDetailInfo;
 import com.zxl.casual.living.http.data.MusicInfoResponseBean;
+import com.zxl.casual.living.http.data.MusicSearchResult;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
-import com.zxl.casual.living.http.data.SearchMusicListInfo;
 import com.zxl.casual.living.http.data.TaoBaoAnchorListResponseBean;
 import com.zxl.casual.living.http.data.TodayWeatherResponseBean;
 import com.zxl.casual.living.http.data.UpdateInfoResponseBean;
 import com.zxl.casual.living.http.data.UserInfoResponseBean;
 
-import java.util.List;
-import java.util.Map;
-
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
-import retrofit2.http.PartMap;
 import retrofit2.http.Query;
-import retrofit2.http.QueryMap;
 import rx.Observable;
 
 /**
@@ -82,19 +73,13 @@ public interface HttpAPI {
 
     //http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.catalogSug&query=一次就好
     @GET("cgi_server/cgi_weather/test9.py")
-    public Observable<MusicInfoResponseBean<SearchMusicListInfo>> searchMusicList(@Query("muscic_method")String muscic_method, @Query("muscic_param_key")String muscic_param_key, @Query("music_param_value")String music_param_value);
+    public Observable<MusicInfoResponseBean<MusicSearchResult>> searchMusicList(@Query("param")String param);
 //    public Call<ResponseBody> getMusicInfo(@Query("muscic_method")String muscic_method, @Query("muscic_param_key")String muscic_param_key, @Query("music_param_value")String music_param_value);
 
     @GET("cgi_server/cgi_weather/test9.py")
-    public Observable<MusicInfoResponseBean<MusicInfo>> getMusicInfo(@Query("muscic_method")String muscic_method, @Query("muscic_param_key")String muscic_param_key, @Query("music_param_value")String music_param_value);
+    public Observable<MusicInfoResponseBean<MusicDetailInfo>> getMusicDetailInfo(@Query("param")String param);
 
+    @GET("cgi_server/cgi_weather/test9.py")
+    public Call<ResponseBody> getMusicListByType(@Query("param")String music_param_value);
 
-    /*
-    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.catalogSug&query=一次就好
-    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.play&songid=256002518
-    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.playAAC&songid=256002518
-    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.lry&songid=256002518
-
-    http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.play&songid=256002518
-     */
 }

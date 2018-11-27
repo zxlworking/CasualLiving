@@ -7,7 +7,7 @@ import java.util.List;
  * Created by zxl on 2018/11/23.
  */
 
-public class SearchMusicListInfo {
+public class MusicSearchResult {
     /**
      {
      "song":[
@@ -109,7 +109,7 @@ public class SearchMusicListInfo {
 
     @Override
     public String toString() {
-        return "SearchMusicListInfo{" +
+        return "MusicSearchResult{" +
                 "song=" + song +
                 ", order='" + order + '\'' +
                 ", error_code='" + error_code + '\'' +

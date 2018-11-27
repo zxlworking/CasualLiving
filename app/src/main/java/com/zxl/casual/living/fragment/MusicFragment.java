@@ -3,11 +3,12 @@ package com.zxl.casual.living.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,27 +16,22 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.zxl.casual.living.R;
+import com.zxl.casual.living.custom.view.MusicTypeView;
 import com.zxl.casual.living.http.HttpUtils;
-import com.zxl.casual.living.http.data.DailySentenceResponseBean;
-import com.zxl.casual.living.http.data.MusicInfo;
+import com.zxl.casual.living.http.data.MusicDetailInfo;
 import com.zxl.casual.living.http.data.MusicInfoResponseBean;
+import com.zxl.casual.living.http.data.MusicSearchResult;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
-import com.zxl.casual.living.http.data.SearchMusicListInfo;
 import com.zxl.casual.living.http.listener.NetRequestListener;
-import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
-import com.zxl.casual.living.utils.SharePreUtils;
 import com.zxl.common.DebugUtil;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zxl on 2018/11/21.
@@ -56,11 +52,18 @@ public class MusicFragment extends BaseFragment {
 
     private EditText mSearchEt;
 
-    private View mMusicContentView;
-    private RecyclerView mMusicListView;
-    private MusicInfoListAdapter mMusicInfoListAdapter;
+    private View mMusicSearchResultView;
+    private RecyclerView mMusicSearchResultListView;
+    private MusicSearchListAdapter mMusicSearchListAdapter;
+
+    private View mMusicTypeView;
+    private TabLayout mMusicTypeTableLayout;
+    private ViewPager mMusicTypeViewPager;
+    private MusicTypeAdapter mMusicTypeAdapter;
 
     private boolean isLogining = false;
+
+    private List<MusicTypeView> mMusicTypeViews = new ArrayList<>();
 
     @Nullable
     @Override
@@ -74,13 +77,26 @@ public class MusicFragment extends BaseFragment {
 
         mSearchEt = mContentView.findViewById(R.id.search_et);
 
-        mMusicContentView = mContentView.findViewById(R.id.music_content_view);
+        mMusicSearchResultView = mContentView.findViewById(R.id.music_search_result_view);
 
-        mMusicListView = mContentView.findViewById(R.id.music_list_view);
+        mMusicSearchResultListView = mContentView.findViewById(R.id.music_search_result_list_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
-        mMusicListView.setLayoutManager(linearLayoutManager);
-        mMusicInfoListAdapter = new MusicInfoListAdapter();
-        mMusicListView.setAdapter(mMusicInfoListAdapter);
+        mMusicSearchResultListView.setLayoutManager(linearLayoutManager);
+        mMusicSearchListAdapter = new MusicSearchListAdapter();
+        mMusicSearchResultListView.setAdapter(mMusicSearchListAdapter);
+
+        mMusicTypeView = mContentView.findViewById(R.id.music_type_view);
+        mMusicTypeTableLayout = mContentView.findViewById(R.id.music_type_table_layout);
+        mMusicTypeViewPager = mContentView.findViewById(R.id.music_type_view_pager);
+
+        for(String typeName : Constants.MUSIC_TYPE_NAMES){
+            mMusicTypeTableLayout.addTab(mMusicTypeTableLayout.newTab().setText(typeName));
+        }
+
+        mMusicTypeAdapter = new MusicTypeAdapter();
+        mMusicTypeViewPager.setAdapter(mMusicTypeAdapter);
+        mMusicTypeTableLayout.setupWithViewPager(mMusicTypeViewPager);
+
 
         mBtnErrorRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +121,17 @@ public class MusicFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mMusicTypeViews.clear();
+        for(int i = 0; i < Constants.MUSIC_TYPE_NAMES.length; i++){
+            MusicTypeView musicTypeView = (MusicTypeView) LayoutInflater.from(mActivity).inflate(R.layout.music_type_view,null);
+            mMusicTypeViews.add(musicTypeView);
+        }
+        mMusicTypeAdapter.notifyDataSetChanged();
+
+        for(int i = 0; i < Constants.MUSIC_TYPE_NAMES.length; i++){
+            mMusicTypeTableLayout.getTabAt(i).setText(Constants.MUSIC_TYPE_NAMES[i]);
+        }
     }
 
     private void searchMusicList(String keyWord) {
@@ -119,18 +146,18 @@ public class MusicFragment extends BaseFragment {
         }
         isLogining = true;
 
-        mMusicContentView.setVisibility(View.VISIBLE);
+        mMusicSearchResultView.setVisibility(View.VISIBLE);
         mLoadingView.setVisibility(View.VISIBLE);
         mLoadErrorView.setVisibility(View.GONE);
 
-        HttpUtils.getInstance().searchMusicList(mActivity, Constants.MUSIC_SEARCH_METHOD, Constants.MUSIC_SEARCH_KEY_PARAM, keyWord, new NetRequestListener() {
+        HttpUtils.getInstance().searchMusicList(mActivity, Constants.MUSIC_SEARCH_METHOD + Constants.MUSIC_SEARCH_KEY_PARAM + keyWord, new NetRequestListener() {
             @Override
             public void onSuccess(ResponseBaseBean responseBaseBean) {
 
-                MusicInfoResponseBean<SearchMusicListInfo> musicInfoResponseBean = (MusicInfoResponseBean<SearchMusicListInfo>) responseBaseBean;
-                mMusicInfoListAdapter.setSearchMusicListInfo(musicInfoResponseBean.result);
+                MusicInfoResponseBean<MusicSearchResult> musicInfoResponseBean = (MusicInfoResponseBean<MusicSearchResult>) responseBaseBean;
+                mMusicSearchListAdapter.setSearchMusicListInfo(musicInfoResponseBean.result);
 
-                mMusicContentView.setVisibility(View.VISIBLE);
+                mMusicSearchResultView.setVisibility(View.VISIBLE);
                 mLoadingView.setVisibility(View.GONE);
                 mLoadErrorView.setVisibility(View.GONE);
 
@@ -141,7 +168,7 @@ public class MusicFragment extends BaseFragment {
             public void onNetError() {
                 Toast.makeText(mActivity,R.string.no_network_tip,Toast.LENGTH_SHORT).show();
 
-                mMusicContentView.setVisibility(View.GONE);
+                mMusicSearchResultView.setVisibility(View.GONE);
                 mLoadingView.setVisibility(View.GONE);
                 mLoadErrorView.setVisibility(View.VISIBLE);
                 isLogining = false;
@@ -151,7 +178,7 @@ public class MusicFragment extends BaseFragment {
             public void onNetError(Throwable e) {
                 Toast.makeText(mActivity,getResources().getString(R.string.network_error_tip,e.toString()),Toast.LENGTH_SHORT).show();
 
-                mMusicContentView.setVisibility(View.GONE);
+                mMusicSearchResultView.setVisibility(View.GONE);
                 mLoadingView.setVisibility(View.GONE);
                 mLoadErrorView.setVisibility(View.VISIBLE);
                 isLogining = false;
@@ -167,26 +194,25 @@ public class MusicFragment extends BaseFragment {
             }
         });
     }
-
-    private void getMusicInfo(String songId) {
+    private void getMusicDetailInfo(String songId) {
 
         if(isLogining){
             return;
         }
         isLogining = true;
 
-        mMusicContentView.setVisibility(View.VISIBLE);
+        mMusicSearchResultView.setVisibility(View.VISIBLE);
         mLoadingView.setVisibility(View.VISIBLE);
         mLoadErrorView.setVisibility(View.GONE);
 
-        HttpUtils.getInstance().getMusicInfo(mActivity, Constants.MUSIC_GET_INFO_METHOD, Constants.MUSIC_GET_INFO_KEY_PARAM, songId, new NetRequestListener() {
+        HttpUtils.getInstance().getMusicDetailInfo(mActivity, Constants.MUSIC_GET_INFO_METHOD + Constants.MUSIC_GET_INFO_KEY_PARAM + songId, new NetRequestListener() {
             @Override
             public void onSuccess(ResponseBaseBean responseBaseBean) {
 
-                MusicInfoResponseBean<MusicInfo> musicInfoResponseBean = (MusicInfoResponseBean<MusicInfo>) responseBaseBean;
+                MusicInfoResponseBean<MusicDetailInfo> musicInfoResponseBean = (MusicInfoResponseBean<MusicDetailInfo>) responseBaseBean;
 //                mMusicInfoListAdapter.setSearchMusicListInfo(musicInfoResponseBean.result);
 
-                mMusicContentView.setVisibility(View.VISIBLE);
+                mMusicSearchResultView.setVisibility(View.VISIBLE);
                 mLoadingView.setVisibility(View.GONE);
                 mLoadErrorView.setVisibility(View.GONE);
 
@@ -197,7 +223,7 @@ public class MusicFragment extends BaseFragment {
             public void onNetError() {
                 Toast.makeText(mActivity,R.string.no_network_tip,Toast.LENGTH_SHORT).show();
 
-                mMusicContentView.setVisibility(View.GONE);
+                mMusicSearchResultView.setVisibility(View.GONE);
                 mLoadingView.setVisibility(View.GONE);
                 mLoadErrorView.setVisibility(View.VISIBLE);
                 isLogining = false;
@@ -207,7 +233,7 @@ public class MusicFragment extends BaseFragment {
             public void onNetError(Throwable e) {
                 Toast.makeText(mActivity,getResources().getString(R.string.network_error_tip,e.toString()),Toast.LENGTH_SHORT).show();
 
-                mMusicContentView.setVisibility(View.GONE);
+                mMusicSearchResultView.setVisibility(View.GONE);
                 mLoadingView.setVisibility(View.GONE);
                 mLoadErrorView.setVisibility(View.VISIBLE);
                 isLogining = false;
@@ -224,12 +250,13 @@ public class MusicFragment extends BaseFragment {
         });
     }
 
-    class MusicInfoListAdapter extends RecyclerView.Adapter<MusicInfoListViewHolder>{
 
-        private SearchMusicListInfo mSearchMusicListInfo;
+    class MusicSearchListAdapter extends RecyclerView.Adapter<MusicInfoListViewHolder>{
 
-        public void setSearchMusicListInfo(SearchMusicListInfo searchMusicListInfo){
-            mSearchMusicListInfo = searchMusicListInfo;
+        private MusicSearchResult mMusicSearchResult;
+
+        public void setSearchMusicListInfo(MusicSearchResult musicSearchResult){
+            mMusicSearchResult = musicSearchResult;
             notifyDataSetChanged();
         }
 
@@ -243,7 +270,7 @@ public class MusicFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(@NonNull MusicInfoListViewHolder musicInfoListViewHolder, int poistion) {
-            final SearchMusicListInfo.Song song = mSearchMusicListInfo.song.get(poistion);
+            final MusicSearchResult.Song song = mMusicSearchResult.song.get(poistion);
 
             musicInfoListViewHolder.mItemMusicListInfoSongNameTv.setText(song.songname);
             musicInfoListViewHolder.mItemMusicListInfoArtistNameTv.setText(song.artistname);
@@ -251,15 +278,15 @@ public class MusicFragment extends BaseFragment {
             musicInfoListViewHolder.mItemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getMusicInfo(song.songid);
+                    getMusicDetailInfo(song.songid);
                 }
             });
         }
 
         @Override
         public int getItemCount() {
-            if(mSearchMusicListInfo != null){
-                return mSearchMusicListInfo.song.size();
+            if(mMusicSearchResult != null){
+                return mMusicSearchResult.song.size();
             }
             return 0;
         }
@@ -277,6 +304,33 @@ public class MusicFragment extends BaseFragment {
 
             mItemMusicListInfoSongNameTv = mItemView.findViewById(R.id.item_music_list_info_song_name_tv);
             mItemMusicListInfoArtistNameTv = mItemView.findViewById(R.id.item_music_list_info_artist_name_tv);
+        }
+    }
+
+    class MusicTypeAdapter extends PagerAdapter{
+
+        @Override
+        public int getCount() {
+            return mMusicTypeViews.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
+            return view == o;
+        }
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            MusicTypeView musicTypeView = mMusicTypeViews.get(position);
+            musicTypeView.setType(Constants.MUSIC_TYPES[position]);
+            container.addView(musicTypeView);
+            return musicTypeView;
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            container.removeView((View) object);
         }
     }
 }
