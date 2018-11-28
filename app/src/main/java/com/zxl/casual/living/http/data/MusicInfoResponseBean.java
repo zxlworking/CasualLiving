@@ -11,8 +11,6 @@ public class MusicInfoResponseBean<T> extends ResponseBaseBean{
     @Override
     public String toString() {
         return "MusicInfoResponseBean{" +
-                "code=" + code +
-                ", desc='" + desc + '\'' +
                 ", code=" + code +
                 ", desc='" + desc + '\'' +
                 ", music_method='" + param + '\'' +

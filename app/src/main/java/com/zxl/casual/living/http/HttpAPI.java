@@ -5,6 +5,7 @@ import com.zxl.casual.living.http.data.CityInfoListResponseBean;
 import com.zxl.casual.living.http.data.MusicDetailInfo;
 import com.zxl.casual.living.http.data.MusicInfoResponseBean;
 import com.zxl.casual.living.http.data.MusicSearchResult;
+import com.zxl.casual.living.http.data.MusicTypeInfo;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.data.TaoBaoAnchorListResponseBean;
@@ -19,6 +20,8 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import retrofit2.http.Streaming;
+import retrofit2.http.Url;
 import rx.Observable;
 
 /**
@@ -74,12 +77,17 @@ public interface HttpAPI {
     //http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.catalogSug&query=一次就好
     @GET("cgi_server/cgi_weather/test9.py")
     public Observable<MusicInfoResponseBean<MusicSearchResult>> searchMusicList(@Query("param")String param);
-//    public Call<ResponseBody> getMusicInfo(@Query("muscic_method")String muscic_method, @Query("muscic_param_key")String muscic_param_key, @Query("music_param_value")String music_param_value);
+//    public Call<ResponseBody> searchMusicList(@Query("param")String param);
 
     @GET("cgi_server/cgi_weather/test9.py")
     public Observable<MusicInfoResponseBean<MusicDetailInfo>> getMusicDetailInfo(@Query("param")String param);
 
     @GET("cgi_server/cgi_weather/test9.py")
-    public Call<ResponseBody> getMusicListByType(@Query("param")String music_param_value);
+    public Observable<MusicInfoResponseBean<MusicTypeInfo>> getMusicListByType(@Query("param")String music_param_value);
+//    public Call<ResponseBody> getMusicListByType(@Query("param")String music_param_value);
+
+    @Streaming
+    @GET
+    Call<ResponseBody> downloadFileWithUrlAsync(@Url String fileUrl);
 
 }

@@ -57,4 +57,5 @@ public class Constants {
     public static final String APP_DIR_PATH = ROOT_DIR_PATH + "/" + "com.zxl.casual.living";
     public static final String APP_PICTURE_PATH = APP_DIR_PATH + "/" + "picture";
     public static final String APP_CRASH_PATH = APP_DIR_PATH + "/" + "crash";
+    public static final String APP_LRC_PATH = APP_DIR_PATH + "/" + "lrc";
 }

@@ -4,10 +4,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.zxl.casual.living.common.FileUtils;
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
 import com.zxl.casual.living.http.data.DailySentenceResponseBean;
 import com.zxl.casual.living.http.data.MusicDetailInfo;
 import com.zxl.casual.living.http.data.MusicInfoResponseBean;
+import com.zxl.casual.living.http.data.MusicLrcDownloadResponseBean;
+import com.zxl.casual.living.http.data.MusicTypeInfo;
+import com.zxl.casual.living.http.data.ParameterizedTypeImpl;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.data.MusicSearchResult;
@@ -17,10 +21,16 @@ import com.zxl.casual.living.http.data.UpdateInfoResponseBean;
 import com.zxl.casual.living.http.data.UserInfoResponseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
 import com.zxl.casual.living.http.retrofit.FileRequestBody;
+import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
 import com.zxl.common.DebugUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -744,7 +754,7 @@ public class HttpUtils {
         DebugUtil.d(TAG,"searchMusicList::param = " + param);
 
         if(isNetworkAvailable(context)){
-//            Call<ResponseBody> call = mHttpAPI.getMusicInfo(muscic_method,muscic_param_key,music_param_value);
+//            Call<ResponseBody> call = mHttpAPI.searchMusicList(param);
 //            call.enqueue(new Callback<ResponseBody>() {
 //                @Override
 //                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -753,11 +763,7 @@ public class HttpUtils {
 //                        DebugUtil.d(TAG, "searchMusicList::s = " + s);
 //
 //                        Type searchMusicListInfoType = new ParameterizedTypeImpl(MusicSearchResult.class, null);
-//                        //Type mMPageObjectType = new ParameterizedTypeImpl(MPageObject.class, new Type[]{mAppType});
 //                        Type musicInfoResponseBeanType = new ParameterizedTypeImpl(MusicInfoResponseBean.class, new Type[]{searchMusicListInfoType});
-//
-////                        Gson mGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-////                        HttpResultBean<App> mHttpResultBean = mGson.fromJson(target,mHttpResultBeanType);
 //
 //                        MusicInfoResponseBean<MusicSearchResult> musicInfoResponseBean = CommonUtils.mGson.fromJson(s, musicInfoResponseBeanType);
 //                        DebugUtil.d(TAG, "searchMusicList::musicInfoResponseBean = " + musicInfoResponseBean);
@@ -858,29 +864,157 @@ public class HttpUtils {
         DebugUtil.d(TAG,"getMusicListByType::param = " + param);
 
         if(isNetworkAvailable(context)){
-            Call<ResponseBody> call = mHttpAPI.getMusicListByType(param);
+//            Call<ResponseBody> call = mHttpAPI.getMusicListByType(param);
+//            call.enqueue(new Callback<ResponseBody>() {
+//                @Override
+//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                    if(response == null || response.body() == null){
+//                        DebugUtil.d(TAG, "getMusicListByType::response null");
+//                    }else{
+//                        try {
+//                            String s = new String(response.body().bytes());
+//                            DebugUtil.d(TAG, "getMusicListByType::s = " + s);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                    DebugUtil.d(TAG,"getMusicListByType::onFailure::t = " + t.toString());
+//                }
+//            });
+
+            Observable<MusicInfoResponseBean<MusicTypeInfo>> observable = mHttpAPI.getMusicListByType(param);
+            observable.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<ResponseBaseBean>() {
+                        @Override
+                        public void onCompleted() {
+                            DebugUtil.d(TAG,"getMusicListByType::onCompleted");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            DebugUtil.d(TAG,"getMusicListByType::onError::e = " + e);
+                            if(listener != null){
+                                listener.onNetError(e);
+                            }
+                        }
+
+                        @Override
+                        public void onNext(ResponseBaseBean responseBaseBean) {
+                            DebugUtil.d(TAG,"getMusicListByType::onNext::responseBaseBean = " + responseBaseBean);
+                            if(responseBaseBean.code == 0){
+                                if(listener != null){
+                                    listener.onSuccess(responseBaseBean);
+                                }
+                            }else{
+                                if(listener != null){
+                                    listener.onServerError(responseBaseBean);
+                                }
+                            }
+                        }
+                    });
+        }else{
+            DebugUtil.d(TAG,"getMusicListByType::net work error");
+            if(listener != null){
+                listener.onNetError();
+            }
+        }
+    }
+
+    public void downloadFileWithUrlAsync(Context context, final String url, final NetRequestListener listener){
+        DebugUtil.d(TAG,"downloadFileWithUrlAsync::url = " + url);
+
+        if(isNetworkAvailable(context)){
+            Call<ResponseBody> call = mHttpAPI.downloadFileWithUrlAsync(url);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if(response == null || response.body() == null){
-                        DebugUtil.d(TAG, "getMusicListByType::response null");
-                    }else{
-                        try {
-                            String s = new String(response.body().bytes());
-                            DebugUtil.d(TAG, "getMusicListByType::s = " + s);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                public void onResponse(Call<ResponseBody> call, final Response<ResponseBody> response) {
+                    //http://qukufile2.qianqian.com/data2/lrc/256217992/256217992.lrc
+                    if(response != null && response.body() != null){
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                DebugUtil.d(TAG,"downloadFileWithUrlAsync::success");
+                                DebugUtil.d(TAG,"downloadFileWithUrlAsync::thread = " + Thread.currentThread());
+
+                                InputStream inputStream = null;
+                                OutputStream outputStream = null;
+                                try {
+                                    String fileName = url.substring(url.lastIndexOf("/"));
+                                    File lrcFile = FileUtils.createFileAndFolder(fileName,Constants.APP_LRC_PATH);
+
+                                    byte[] fileReader = new byte[4096];
+
+                                    long fileSize = response.body().contentLength();
+                                    long fileSizeDownloaded = 0;
+
+                                    inputStream = response.body().byteStream();
+                                    outputStream = new FileOutputStream(lrcFile);
+
+                                    while (true) {
+                                        int read = inputStream.read(fileReader);
+
+                                        if (read == -1) {
+                                            break;
+                                        }
+
+                                        outputStream.write(fileReader, 0, read);
+
+                                        fileSizeDownloaded += read;
+                                    }
+                                    outputStream.flush();
+
+                                    MusicLrcDownloadResponseBean musicLrcDownloadResponseBean = new MusicLrcDownloadResponseBean();
+                                    musicLrcDownloadResponseBean.mLrcUrl = url;
+                                    musicLrcDownloadResponseBean.mPath = lrcFile.getPath();
+
+                                    if(listener != null){
+                                        listener.onSuccess(musicLrcDownloadResponseBean);
+                                    }
+
+                                    return;
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    if (outputStream != null) {
+                                        try {
+                                            outputStream.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    if (inputStream != null) {
+                                        try {
+                                            inputStream.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }
+                        }).start();
+                    }
+                    DebugUtil.d(TAG,"downloadFileWithUrlAsync::onError");
+                    if(listener != null){
+                        listener.onNetError();
                     }
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    DebugUtil.d(TAG,"getMusicListByType::onFailure::t = " + t.toString());
+                public void onFailure(Call<ResponseBody> call, Throwable e) {
+                    DebugUtil.d(TAG,"downloadFileWithUrlAsync::onError::e = " + e);
+                    if(listener != null){
+                        listener.onNetError(e);
+                    }
                 }
             });
         }else{
-            DebugUtil.d(TAG,"getMusicListByType::net work error");
+            DebugUtil.d(TAG,"downloadFileWithUrlAsync::net work error");
             if(listener != null){
                 listener.onNetError();
             }

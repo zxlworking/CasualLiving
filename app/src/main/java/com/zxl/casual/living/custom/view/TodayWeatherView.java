@@ -128,7 +128,7 @@ public class TodayWeatherView extends CardView {
             HttpUtils.getInstance().getZHTianQiByCity(mContext, addr, city , new NetRequestListener() {
                 @Override
                 public void onSuccess(ResponseBaseBean responseBaseBean) {
-                    DebugUtil.d(TAG,"onSuccess::responseBaseBean = " + responseBaseBean);
+//                    DebugUtil.d(TAG,"onSuccess::responseBaseBean = " + responseBaseBean);
 
                     TodayWeatherResponseBean todayWeatherResponseBean = (TodayWeatherResponseBean) responseBaseBean;
 

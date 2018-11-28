@@ -246,7 +246,12 @@ public class TaoBaoAnchorFragment extends BaseFragment {
     public class TaoBaoAnchorAdapter extends LoadMoreAdapter<TaoBaoAnchor>{
 
         @Override
-        public RecyclerView.ViewHolder getContentViewHolder(@NonNull ViewGroup parent) {
+        public RecyclerView.ViewHolder getHeadViewHolder(@NonNull ViewGroup parent) {
+            return null;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder getContentViewHolder(@NonNull ViewGroup parent, int viewType) {
             View mItemView = LayoutInflater.from(mActivity).inflate(R.layout.item_taobao_anchor_view, parent, false);
             return new TaoBaoAnchorViewHolder(mItemView);
         }
@@ -355,174 +360,12 @@ public class TaoBaoAnchorFragment extends BaseFragment {
             mBtnErrorRefresh.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mTaoBaoAnchorAdapter.setLoadDataState(TaoBaoAnchorAdapter.LOADING_DATA_STATE);
+                    mTaoBaoAnchorAdapter.setLoadDataState(LOADING_DATA_STATE);
                     loadData(false, mCurrentPage + 1);
                 }
             });
         }
     }
-
-
-    /*
-    public class TaoBaoAnchorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-
-        public static final int LOADING_DATA_STATE = 1;
-        public static final int LOAD_DATA_SUCCESS_STATE =2 ;
-        public static final int LOAD_DATA_ERROR_STATE = 3;
-
-        public static final int CONTENT_TYPE = 1;
-        public static final int FOOT_TYPE = 2;
-
-        private int mCurrentState = LOAD_DATA_SUCCESS_STATE;
-        private List<TaoBaoAnchor> mTaoBaoAnchors = new ArrayList<>();
-
-        public void setData(List<TaoBaoAnchor> elements){
-            mTaoBaoAnchors.clear();
-            mTaoBaoAnchors.addAll(elements);
-            mCurrentState = LOAD_DATA_SUCCESS_STATE;
-            notifyDataSetChanged();
-        }
-
-        public void addData(List<TaoBaoAnchor> elements){
-            mTaoBaoAnchors.addAll(elements);
-            mCurrentState = LOAD_DATA_SUCCESS_STATE;
-            notifyItemRangeInserted(getItemCount() - 1, elements.size());
-        }
-
-        public void setLoadDataState(int state){
-            mCurrentState = state;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if(position == getItemCount() - 1 && mCurrentPage < mTotalPage - 1){
-                return FOOT_TYPE;
-            }
-            return CONTENT_TYPE;
-        }
-
-        @NonNull
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            switch (viewType){
-                case CONTENT_TYPE:
-                    View mItemView = LayoutInflater.from(mActivity).inflate(R.layout.item_taobao_anchor_view, parent, false);
-                    return new TaoBaoAnchorViewHolder(mItemView);
-                case FOOT_TYPE:
-                    View mItemFootView = LayoutInflater.from(mActivity).inflate(R.layout.item_taobao_anchor_foot_view, parent, false);
-                    return new TaoBaoAnchorFootViewHolder(mItemFootView);
-            }
-            return null;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            TaoBaoAnchorViewHolder mTaoBaoAnchorViewHolder = null;
-            if(holder instanceof TaoBaoAnchorViewHolder){
-                mTaoBaoAnchorViewHolder = (TaoBaoAnchorViewHolder) holder;
-
-                ViewGroup.LayoutParams lp = mTaoBaoAnchorViewHolder.mItemTaobaoAnchorImg.getLayoutParams();
-                lp.width = (int) ((CommonUtils.screenWidth() - CommonUtils.dip2px(12) * 3) / 2 - CommonUtils.dip2px(8)) + 2;
-                lp.height = lp.width;
-                mTaoBaoAnchorViewHolder.mItemTaobaoAnchorImg.setLayoutParams(lp);
-
-                final TaoBaoAnchorViewHolder finalMTaoBaoAnchorViewHolder = mTaoBaoAnchorViewHolder;
-                mTaoBaoAnchorViewHolder.mPaletteView.parse(mTaoBaoAnchors.get(position).anchor_img, mTaoBaoAnchorViewHolder.mItemTaobaoAnchorImg, new PaletteView.OnPaletteCompleteListener() {
-                    @Override
-                    public void onComplete(Palette palette) {
-                        Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
-                        Palette.Swatch lightVibrantSwatch = palette.getLightVibrantSwatch();
-                        Palette.Swatch darkVibrantSwatch = palette.getDarkVibrantSwatch();
-                        Palette.Swatch mutedSwatch = palette.getMutedSwatch();
-                        Palette.Swatch lightMutedSwatch = palette.getLightMutedSwatch();
-                        Palette.Swatch darkMutedSwatch = palette.getDarkMutedSwatch();
-                        DebugUtil.d(TAG,"vibrantSwatch = " + palette.getVibrantSwatch());
-                        DebugUtil.d(TAG,"lightVibrantSwatch = " + lightVibrantSwatch);
-                        DebugUtil.d(TAG,"darkVibrantSwatch = " + darkVibrantSwatch);
-                        DebugUtil.d(TAG,"mutedSwatch = " + mutedSwatch);
-                        DebugUtil.d(TAG,"lightMutedSwatch = " + lightMutedSwatch);
-                        DebugUtil.d(TAG,"darkMutedSwatch = " + darkMutedSwatch);
-
-                        int bgColor = 0;
-                        int textColor = 0;
-                        if(vibrantSwatch != null){
-                            bgColor = vibrantSwatch.getRgb();
-                            textColor = vibrantSwatch.getTitleTextColor();
-                        }else if(lightVibrantSwatch != null){
-                            bgColor = lightVibrantSwatch.getRgb();
-                            textColor = lightVibrantSwatch.getTitleTextColor();
-                        }else if(darkVibrantSwatch != null){
-                            bgColor = darkVibrantSwatch.getRgb();
-                            textColor = darkVibrantSwatch.getTitleTextColor();
-                        }else if(mutedSwatch != null){
-                            bgColor = mutedSwatch.getRgb();
-                            textColor = mutedSwatch.getTitleTextColor();
-                        }else if(lightMutedSwatch != null){
-                            bgColor = lightMutedSwatch.getRgb();
-                            textColor = lightMutedSwatch.getTitleTextColor();
-                        }else if(darkMutedSwatch != null){
-                            bgColor = darkMutedSwatch.getRgb();
-                            textColor = darkMutedSwatch.getTitleTextColor();
-                        }
-
-                        finalMTaoBaoAnchorViewHolder.mPaletteView.setPaletteBackgroundColor(bgColor);
-                        finalMTaoBaoAnchorViewHolder.mItemTaobaoAnchorName.setTextColor(textColor);
-                        finalMTaoBaoAnchorViewHolder.mItemTaobaoAnchorFansName.setTextColor(textColor);
-                        finalMTaoBaoAnchorViewHolder.mItemTaobaoAnchorFansCount.setTextColor(textColor);
-                    }
-                });
-
-//                Glide.with(mActivity).load(mTaoBaoAnchors.get(position).anchor_img).into(mTaoBaoAnchorViewHolder.mItemTaobaoAnchorImg);
-                Glide.with(mActivity).load(mTaoBaoAnchors.get(position).anchor_vflag).into(mTaoBaoAnchorViewHolder.mItemTaobaoAnchorVflag);
-                mTaoBaoAnchorViewHolder.mItemTaobaoAnchorName.setText(mTaoBaoAnchors.get(position).anchor_name);
-                mTaoBaoAnchorViewHolder.mItemTaobaoAnchorFansCount.setText(mTaoBaoAnchors.get(position).fans_count);
-            }
-            TaoBaoAnchorFootViewHolder mTaoBaoAnchorFootViewHolder = null;
-            if(holder instanceof TaoBaoAnchorFootViewHolder){
-                mTaoBaoAnchorFootViewHolder = (TaoBaoAnchorFootViewHolder) holder;
-            }
-            if(position == getItemCount() - 1 && mCurrentPage < mTotalPage - 1 && mTaoBaoAnchorFootViewHolder != null){
-                switch (mCurrentState){
-                    case LOAD_DATA_SUCCESS_STATE:
-                        mTaoBaoAnchorFootViewHolder.mLoadErrorView.setVisibility(View.GONE);
-                        mTaoBaoAnchorFootViewHolder.mLoadingView.setVisibility(View.VISIBLE);
-
-                        loadData(false,mCurrentPage + 1);
-                        break;
-                    case LOADING_DATA_STATE:
-                        mTaoBaoAnchorFootViewHolder.mLoadErrorView.setVisibility(View.GONE);
-                        mTaoBaoAnchorFootViewHolder.mLoadingView.setVisibility(View.VISIBLE);
-                        break;
-                    case LOAD_DATA_ERROR_STATE:
-                        mTaoBaoAnchorFootViewHolder.mLoadErrorView.setVisibility(View.VISIBLE);
-                        mTaoBaoAnchorFootViewHolder.mLoadingView.setVisibility(View.GONE);
-
-                        View mBtnErrorRefresh = mTaoBaoAnchorFootViewHolder.mLoadErrorView.findViewById(R.id.load_error_btn);
-
-                        mBtnErrorRefresh.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mTaoBaoAnchorAdapter.setLoadDataState(TaoBaoAnchorAdapter.LOADING_DATA_STATE);
-                                loadData(false, mCurrentPage + 1);
-                            }
-                        });
-                        break;
-                }
-            }else{
-                if(mTaoBaoAnchorViewHolder != null){
-                    final TaoBaoAnchor mTaoBaoAnchor = mTaoBaoAnchors.get(position);
-
-                }
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mTaoBaoAnchors.size() + (mCurrentPage < mTotalPage - 1 ? 1 : 0);
-        }
-    }
-    */
 
     public class TaoBaoAnchorViewHolder extends RecyclerView.ViewHolder{
 

@@ -23,8 +23,9 @@ public abstract class LoadMoreAdapter<T> extends RecyclerView.Adapter{
     public static final int LOAD_DATA_SUCCESS_STATE =2 ;
     public static final int LOAD_DATA_ERROR_STATE = 3;
 
-    public static final int CONTENT_TYPE = 1;
-    public static final int FOOT_TYPE = 2;
+    public static final int HEAD_TYPE = -1;
+    public static final int CONTENT_TYPE = -2;
+    public static final int FOOT_TYPE = -3;
 
     private int mCurrentState = LOAD_DATA_SUCCESS_STATE;
 
@@ -88,8 +89,10 @@ public abstract class LoadMoreAdapter<T> extends RecyclerView.Adapter{
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         switch (viewType){
+            case HEAD_TYPE:
+                return getHeadViewHolder(viewGroup);
             case CONTENT_TYPE:
-                return getContentViewHolder(viewGroup);
+                return getContentViewHolder(viewGroup,viewType);
             case FOOT_TYPE:
                 return getFootViewHolder(viewGroup);
         }
@@ -99,7 +102,7 @@ public abstract class LoadMoreAdapter<T> extends RecyclerView.Adapter{
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if(position == getItemCount() - 1 && mCurrentPage < mTotalPage - 1){
-            DebugUtil.d(TAG,"onBindFootViewHolder::mCurrentPage = " + mCurrentPage);
+            DebugUtil.d(TAG,"onBindFootViewHolder::mCurrentState = " + mCurrentState);
             switch (mCurrentState) {
                 case LOAD_DATA_SUCCESS_STATE:
                     onBindFootViewHolderLoadDataSuccess(viewHolder);
@@ -116,7 +119,8 @@ public abstract class LoadMoreAdapter<T> extends RecyclerView.Adapter{
         }
     }
 
-    public abstract RecyclerView.ViewHolder getContentViewHolder(@NonNull ViewGroup parent);
+    public abstract RecyclerView.ViewHolder getHeadViewHolder(@NonNull ViewGroup parent);
+    public abstract RecyclerView.ViewHolder getContentViewHolder(@NonNull ViewGroup parent, int viewType);
     public abstract RecyclerView.ViewHolder getFootViewHolder(@NonNull ViewGroup parent);
 
     public abstract void onBindContentViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position);
