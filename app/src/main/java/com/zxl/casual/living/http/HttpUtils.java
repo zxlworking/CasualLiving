@@ -7,21 +7,15 @@ import android.net.NetworkInfo;
 import com.zxl.casual.living.common.FileUtils;
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
 import com.zxl.casual.living.http.data.DailySentenceResponseBean;
-import com.zxl.casual.living.http.data.MusicDetailInfo;
-import com.zxl.casual.living.http.data.MusicInfoResponseBean;
-import com.zxl.casual.living.http.data.MusicLrcDownloadResponseBean;
-import com.zxl.casual.living.http.data.MusicTypeInfo;
-import com.zxl.casual.living.http.data.ParameterizedTypeImpl;
+import com.zxl.casual.living.http.data.MusicSearchResponseBean;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
-import com.zxl.casual.living.http.data.MusicSearchResult;
 import com.zxl.casual.living.http.data.TaoBaoAnchorListResponseBean;
 import com.zxl.casual.living.http.data.TodayWeatherResponseBean;
 import com.zxl.casual.living.http.data.UpdateInfoResponseBean;
 import com.zxl.casual.living.http.data.UserInfoResponseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
 import com.zxl.casual.living.http.retrofit.FileRequestBody;
-import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
 import com.zxl.common.DebugUtil;
 
@@ -30,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -750,23 +743,20 @@ public class HttpUtils {
         }
     }
 
-    public void searchMusicList(Context context, String param, final NetRequestListener listener){
-        DebugUtil.d(TAG,"searchMusicList::param = " + param);
+    public void searchMusic(Context context, String music_operator, String search_music_name, String search_music_offset, String search_music_page_count, final NetRequestListener listener){
+        DebugUtil.d(TAG,"searchMusic::music_operator = " + music_operator +
+                "::search_music_name = " + search_music_name +
+                "::search_music_offset = " + search_music_offset +
+                "::search_music_page_count = " + search_music_page_count);
 
         if(isNetworkAvailable(context)){
-//            Call<ResponseBody> call = mHttpAPI.searchMusicList(param);
+//            Call<ResponseBody> call = mHttpAPI.searchMusic(music_operator,search_music_name,search_music_offset,search_music_page_count);
 //            call.enqueue(new Callback<ResponseBody>() {
 //                @Override
 //                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 //                    try {
 //                        String s = new String(response.body().bytes());
-//                        DebugUtil.d(TAG, "searchMusicList::s = " + s);
-//
-//                        Type searchMusicListInfoType = new ParameterizedTypeImpl(MusicSearchResult.class, null);
-//                        Type musicInfoResponseBeanType = new ParameterizedTypeImpl(MusicInfoResponseBean.class, new Type[]{searchMusicListInfoType});
-//
-//                        MusicInfoResponseBean<MusicSearchResult> musicInfoResponseBean = CommonUtils.mGson.fromJson(s, musicInfoResponseBeanType);
-//                        DebugUtil.d(TAG, "searchMusicList::musicInfoResponseBean = " + musicInfoResponseBean);
+//                        DebugUtil.d(TAG, "searchMusic::s = " + s);
 //
 //                    } catch (IOException e) {
 //                        e.printStackTrace();
@@ -778,18 +768,19 @@ public class HttpUtils {
 //
 //                }
 //            });
-            Observable<MusicInfoResponseBean<MusicSearchResult>> observable = mHttpAPI.searchMusicList(param);
+
+            Observable<MusicSearchResponseBean> observable = mHttpAPI.searchMusic(music_operator,search_music_name,search_music_offset,search_music_page_count);
             observable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<ResponseBaseBean>() {
                         @Override
                         public void onCompleted() {
-                            DebugUtil.d(TAG,"searchMusicList::onCompleted");
+                            DebugUtil.d(TAG,"searchMusic::onCompleted");
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            DebugUtil.d(TAG,"searchMusicList::onError::e = " + e);
+                            DebugUtil.d(TAG,"searchMusic::onError::e = " + e);
                             if(listener != null){
                                 listener.onNetError(e);
                             }
@@ -797,7 +788,7 @@ public class HttpUtils {
 
                         @Override
                         public void onNext(ResponseBaseBean responseBaseBean) {
-                            DebugUtil.d(TAG,"searchMusicList::onNext::responseBaseBean = " + responseBaseBean);
+                            DebugUtil.d(TAG,"searchMusic::onNext::responseBaseBean = " + responseBaseBean);
                             if(responseBaseBean.code == 0){
                                 if(listener != null){
                                     listener.onSuccess(responseBaseBean);
@@ -810,211 +801,7 @@ public class HttpUtils {
                         }
                     });
         }else{
-            DebugUtil.d(TAG,"searchMusicList::net work error");
-            if(listener != null){
-                listener.onNetError();
-            }
-        }
-    }
-
-    public void getMusicDetailInfo(Context context, String param, final NetRequestListener listener){
-        DebugUtil.d(TAG,"getMusicDetailInfo::param = " + param);
-
-        if(isNetworkAvailable(context)){
-            Observable<MusicInfoResponseBean<MusicDetailInfo>> observable = mHttpAPI.getMusicDetailInfo(param);
-            observable.subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<ResponseBaseBean>() {
-                        @Override
-                        public void onCompleted() {
-                            DebugUtil.d(TAG,"getMusicDetailInfo::onCompleted");
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            DebugUtil.d(TAG,"getMusicDetailInfo::onError::e = " + e);
-                            if(listener != null){
-                                listener.onNetError(e);
-                            }
-                        }
-
-                        @Override
-                        public void onNext(ResponseBaseBean responseBaseBean) {
-                            DebugUtil.d(TAG,"getMusicDetailInfo::onNext::responseBaseBean = " + responseBaseBean);
-                            if(responseBaseBean.code == 0){
-                                if(listener != null){
-                                    listener.onSuccess(responseBaseBean);
-                                }
-                            }else{
-                                if(listener != null){
-                                    listener.onServerError(responseBaseBean);
-                                }
-                            }
-                        }
-                    });
-        }else{
-            DebugUtil.d(TAG,"getMusicDetailInfo::net work error");
-            if(listener != null){
-                listener.onNetError();
-            }
-        }
-    }
-
-    public void getMusicListByType(Context context, String param, final NetRequestListener listener){
-        DebugUtil.d(TAG,"getMusicListByType::param = " + param);
-
-        if(isNetworkAvailable(context)){
-//            Call<ResponseBody> call = mHttpAPI.getMusicListByType(param);
-//            call.enqueue(new Callback<ResponseBody>() {
-//                @Override
-//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                    if(response == null || response.body() == null){
-//                        DebugUtil.d(TAG, "getMusicListByType::response null");
-//                    }else{
-//                        try {
-//                            String s = new String(response.body().bytes());
-//                            DebugUtil.d(TAG, "getMusicListByType::s = " + s);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                    DebugUtil.d(TAG,"getMusicListByType::onFailure::t = " + t.toString());
-//                }
-//            });
-
-            Observable<MusicInfoResponseBean<MusicTypeInfo>> observable = mHttpAPI.getMusicListByType(param);
-            observable.subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<ResponseBaseBean>() {
-                        @Override
-                        public void onCompleted() {
-                            DebugUtil.d(TAG,"getMusicListByType::onCompleted");
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            DebugUtil.d(TAG,"getMusicListByType::onError::e = " + e);
-                            if(listener != null){
-                                listener.onNetError(e);
-                            }
-                        }
-
-                        @Override
-                        public void onNext(ResponseBaseBean responseBaseBean) {
-                            DebugUtil.d(TAG,"getMusicListByType::onNext::responseBaseBean = " + responseBaseBean);
-                            if(responseBaseBean.code == 0){
-                                if(listener != null){
-                                    listener.onSuccess(responseBaseBean);
-                                }
-                            }else{
-                                if(listener != null){
-                                    listener.onServerError(responseBaseBean);
-                                }
-                            }
-                        }
-                    });
-        }else{
-            DebugUtil.d(TAG,"getMusicListByType::net work error");
-            if(listener != null){
-                listener.onNetError();
-            }
-        }
-    }
-
-    public void downloadFileWithUrlAsync(Context context, final String url, final NetRequestListener listener){
-        DebugUtil.d(TAG,"downloadFileWithUrlAsync::url = " + url);
-
-        if(isNetworkAvailable(context)){
-            Call<ResponseBody> call = mHttpAPI.downloadFileWithUrlAsync(url);
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, final Response<ResponseBody> response) {
-                    //http://qukufile2.qianqian.com/data2/lrc/256217992/256217992.lrc
-                    if(response != null && response.body() != null){
-
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                DebugUtil.d(TAG,"downloadFileWithUrlAsync::success");
-                                DebugUtil.d(TAG,"downloadFileWithUrlAsync::thread = " + Thread.currentThread());
-
-                                InputStream inputStream = null;
-                                OutputStream outputStream = null;
-                                try {
-                                    String fileName = url.substring(url.lastIndexOf("/"));
-                                    File lrcFile = FileUtils.createFileAndFolder(fileName,Constants.APP_LRC_PATH);
-
-                                    byte[] fileReader = new byte[4096];
-
-                                    long fileSize = response.body().contentLength();
-                                    long fileSizeDownloaded = 0;
-
-                                    inputStream = response.body().byteStream();
-                                    outputStream = new FileOutputStream(lrcFile);
-
-                                    while (true) {
-                                        int read = inputStream.read(fileReader);
-
-                                        if (read == -1) {
-                                            break;
-                                        }
-
-                                        outputStream.write(fileReader, 0, read);
-
-                                        fileSizeDownloaded += read;
-                                    }
-                                    outputStream.flush();
-
-                                    MusicLrcDownloadResponseBean musicLrcDownloadResponseBean = new MusicLrcDownloadResponseBean();
-                                    musicLrcDownloadResponseBean.mLrcUrl = url;
-                                    musicLrcDownloadResponseBean.mPath = lrcFile.getPath();
-
-                                    if(listener != null){
-                                        listener.onSuccess(musicLrcDownloadResponseBean);
-                                    }
-
-                                    return;
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    if (outputStream != null) {
-                                        try {
-                                            outputStream.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                    if (inputStream != null) {
-                                        try {
-                                            inputStream.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                            }
-                        }).start();
-                    }
-                    DebugUtil.d(TAG,"downloadFileWithUrlAsync::onError");
-                    if(listener != null){
-                        listener.onNetError();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable e) {
-                    DebugUtil.d(TAG,"downloadFileWithUrlAsync::onError::e = " + e);
-                    if(listener != null){
-                        listener.onNetError(e);
-                    }
-                }
-            });
-        }else{
-            DebugUtil.d(TAG,"downloadFileWithUrlAsync::net work error");
+            DebugUtil.d(TAG,"searchMusic::net work error");
             if(listener != null){
                 listener.onNetError();
             }

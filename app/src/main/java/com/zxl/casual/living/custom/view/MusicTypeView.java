@@ -7,7 +7,6 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -25,11 +23,8 @@ import com.zxl.casual.living.R;
 import com.zxl.casual.living.common.LoadMoreAdapter;
 import com.zxl.casual.living.event.GetMusicDetailInfoEvent;
 import com.zxl.casual.living.http.HttpUtils;
-import com.zxl.casual.living.http.data.MusicInfoResponseBean;
-import com.zxl.casual.living.http.data.MusicTypeInfo;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
-import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
 import com.zxl.casual.living.utils.EventBusUtils;
 import com.zxl.common.DebugUtil;
@@ -82,12 +77,11 @@ public class MusicTypeView extends FrameLayout {
                     mMusicTypeLoadingView.setVisibility(View.GONE);
                     mMusicTypeLoadErrorView.setVisibility(View.GONE);
 
-                    MusicInfoResponseBean<MusicTypeInfo> mFirstTemp = (MusicInfoResponseBean<MusicTypeInfo>) msg.obj;
-                    int songnum = Integer.valueOf(mFirstTemp.result.billboard.billboard_songnum);
-                    mTotalPage = songnum / mPageCount + (songnum % mPageCount == 0 ? 0 : 1) + 1;
-                    mCurrentPage++;
-//                    mMusicTypeListAdapter.setBillboard(mFirstTemp.result.billboard);
-                    mMusicTypeListAdapter.setData(mFirstTemp.result.song_list,mCurrentPage,mTotalPage);
+//                    MusicInfoResponseBean<MusicTypeInfo> mFirstTemp = (MusicInfoResponseBean<MusicTypeInfo>) msg.obj;
+//                    int songnum = Integer.valueOf(mFirstTemp.result.billboard.billboard_songnum);
+//                    mTotalPage = songnum / mPageCount + (songnum % mPageCount == 0 ? 0 : 1) + 1;
+//                    mCurrentPage++;
+//                    mMusicTypeListAdapter.setData(mFirstTemp.result.song_list,mCurrentPage,mTotalPage);
 
                     isLoading = false;
                     mMusicTypeSwipeRefreshLayout.setRefreshing(false);
@@ -110,9 +104,9 @@ public class MusicTypeView extends FrameLayout {
                     mMusicTypeLoadingView.setVisibility(View.GONE);
                     mMusicTypeLoadErrorView.setVisibility(View.GONE);
 
-                    MusicInfoResponseBean<MusicTypeInfo> mTemp = (MusicInfoResponseBean<MusicTypeInfo>) msg.obj;
-                    mCurrentPage++;
-                    mMusicTypeListAdapter.addData(mTemp.result.song_list,mCurrentPage,mTotalPage);
+//                    MusicInfoResponseBean<MusicTypeInfo> mTemp = (MusicInfoResponseBean<MusicTypeInfo>) msg.obj;
+//                    mCurrentPage++;
+//                    mMusicTypeListAdapter.addData(mTemp.result.song_list,mCurrentPage,mTotalPage);
 
                     isLoading = false;
                     mMusicTypeSwipeRefreshLayout.setRefreshing(false);
@@ -203,83 +197,84 @@ public class MusicTypeView extends FrameLayout {
         }
 
         int offset = mCurrentPage * mPageCount;
-        HttpUtils.getInstance().getMusicListByType(mContext, Constants.MUSIC_GET_BY_TYPE_METHOD +
-                Constants.MUSIC_GET_BY_TYPE_KEY_PARAM + mMusicType +
-                Constants.MUSIC_GET_BY_TYPE_SIZE_KEY_PARAM + mPageCount +
-                Constants.MUSIC_GET_BY_TYPE_OFFSET_KEY_PARAM + offset, new NetRequestListener() {
-            @Override
-            public void onSuccess(ResponseBaseBean responseBaseBean) {
-                MusicInfoResponseBean<MusicTypeInfo> musicInfoResponseBean = (MusicInfoResponseBean<MusicTypeInfo>) responseBaseBean;
-
-                if(musicInfoResponseBean.result.song_list == null || musicInfoResponseBean.result.billboard == null){
-                    if(isFirstLoad){
-                        mHandler.sendEmptyMessage(MSG_FIRST_LOAD_ERROR);
-                    }else{
-                        mHandler.sendEmptyMessage(MSG_LOAD_ERROR);
-                    }
-                }else{
-                    if(isFirstLoad){
-                        Message message = mHandler.obtainMessage();
-                        message.what = MSG_FIRST_LOAD_SUCCESS;
-                        message.obj = musicInfoResponseBean;
-                        message.sendToTarget();
-                    }else{
-                        Message message = mHandler.obtainMessage();
-                        message.what = MSG_LOAD_SUCCESS;
-                        message.obj = musicInfoResponseBean;
-                        message.sendToTarget();
-                    }
-                }
-
-            }
-
-            @Override
-            public void onNetError() {
-                if(isFirstLoad){
-                    mHandler.sendEmptyMessage(MSG_FIRST_LOAD_ERROR);
-                }else{
-                    mHandler.sendEmptyMessage(MSG_LOAD_ERROR);
-                }
-            }
-
-            @Override
-            public void onNetError(Throwable e) {
-                if(isFirstLoad){
-                    mHandler.sendEmptyMessage(MSG_FIRST_LOAD_ERROR);
-                }else{
-                    mHandler.sendEmptyMessage(MSG_LOAD_ERROR);
-                }
-            }
-
-            @Override
-            public void onServerError(ResponseBaseBean responseBaseBean) {
-                if(isFirstLoad){
-                    mHandler.sendEmptyMessage(MSG_FIRST_LOAD_ERROR);
-                }else{
-                    mHandler.sendEmptyMessage(MSG_LOAD_ERROR);
-                }
-            }
-        });
+//        HttpUtils.getInstance().getMusicListByType(mContext, Constants.MUSIC_GET_BY_TYPE_METHOD +
+//                Constants.MUSIC_GET_BY_TYPE_KEY_PARAM + mMusicType +
+//                Constants.MUSIC_GET_BY_TYPE_SIZE_KEY_PARAM + mPageCount +
+//                Constants.MUSIC_GET_BY_TYPE_OFFSET_KEY_PARAM + offset, new NetRequestListener() {
+//            @Override
+//            public void onSuccess(ResponseBaseBean responseBaseBean) {
+//                MusicInfoResponseBean<MusicTypeInfo> musicInfoResponseBean = (MusicInfoResponseBean<MusicTypeInfo>) responseBaseBean;
+//
+//                if(musicInfoResponseBean.result.song_list == null || musicInfoResponseBean.result.billboard == null){
+//                    if(isFirstLoad){
+//                        mHandler.sendEmptyMessage(MSG_FIRST_LOAD_ERROR);
+//                    }else{
+//                        mHandler.sendEmptyMessage(MSG_LOAD_ERROR);
+//                    }
+//                }else{
+//                    if(isFirstLoad){
+//                        Message message = mHandler.obtainMessage();
+//                        message.what = MSG_FIRST_LOAD_SUCCESS;
+//                        message.obj = musicInfoResponseBean;
+//                        message.sendToTarget();
+//                    }else{
+//                        Message message = mHandler.obtainMessage();
+//                        message.what = MSG_LOAD_SUCCESS;
+//                        message.obj = musicInfoResponseBean;
+//                        message.sendToTarget();
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onNetError() {
+//                if(isFirstLoad){
+//                    mHandler.sendEmptyMessage(MSG_FIRST_LOAD_ERROR);
+//                }else{
+//                    mHandler.sendEmptyMessage(MSG_LOAD_ERROR);
+//                }
+//            }
+//
+//            @Override
+//            public void onNetError(Throwable e) {
+//                if(isFirstLoad){
+//                    mHandler.sendEmptyMessage(MSG_FIRST_LOAD_ERROR);
+//                }else{
+//                    mHandler.sendEmptyMessage(MSG_LOAD_ERROR);
+//                }
+//            }
+//
+//            @Override
+//            public void onServerError(ResponseBaseBean responseBaseBean) {
+//                if(isFirstLoad){
+//                    mHandler.sendEmptyMessage(MSG_FIRST_LOAD_ERROR);
+//                }else{
+//                    mHandler.sendEmptyMessage(MSG_LOAD_ERROR);
+//                }
+//            }
+//        });
     }
 
-    public class MusicTypeListAdapter extends LoadMoreAdapter<MusicTypeInfo.MusicTypeSong> {
+    public class MusicTypeListAdapter extends LoadMoreAdapter {
 
-        private MusicTypeInfo.Billboard mBillboard;
-
-        public void setBillboard(MusicTypeInfo.Billboard billboard){
-            mBillboard = billboard;
-        }
+//        private MusicTypeInfo.Billboard mBillboard;
+//
+//        public void setBillboard(MusicTypeInfo.Billboard billboard){
+//            mBillboard = billboard;
+//        }
 
         @Override
         public int getItemCount() {
-            return (mBillboard != null ? 1 : 0) + getData().size() + (mCurrentPage < mTotalPage - 1 ? 1 : 0);
+//            return (mBillboard != null ? 1 : 0) + getData().size() + (mCurrentPage < mTotalPage - 1 ? 1 : 0);
+            return 0;
         }
 
         @Override
         public int getItemViewType(int position) {
-//            if(position == 0){
-//                return HEAD_TYPE;
-//            }else
+            if(position == 0){
+                return HEAD_TYPE;
+            }else
             if(position == getItemCount() - 1 && mCurrentPage < mTotalPage - 1){
                 return FOOT_TYPE;
             }else{
@@ -307,28 +302,6 @@ public class MusicTypeView extends FrameLayout {
 
         @Override
         public void onBindContentViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-            if(viewHolder instanceof MusicTypeHeadViewHolder){
-                MusicTypeHeadViewHolder musicTypeHeadViewHolder = (MusicTypeHeadViewHolder) viewHolder;
-
-                Glide.with(mContext).load(mBillboard.pic_s192).into(musicTypeHeadViewHolder.mItemMusicTypeHeadImg);
-                musicTypeHeadViewHolder.mItemMusicTypeHeadDescTv.setText(mBillboard.name);
-            }
-            if(viewHolder instanceof MusicTypeContentViewHolder){
-                MusicTypeContentViewHolder musicTypeContentViewHolder = (MusicTypeContentViewHolder) viewHolder;
-                final MusicTypeInfo.MusicTypeSong musicTypeSong = getData().get(position);
-
-                Glide.with(mContext).load(musicTypeSong.pic_big).into(musicTypeContentViewHolder.mItemMusicTypeContentImg);
-                musicTypeContentViewHolder.mItemMusicTypeContentTitleTv.setText(musicTypeSong.title);
-                musicTypeContentViewHolder.mItemMusicTypeContentAuthorTv.setText(musicTypeSong.author);
-
-                musicTypeContentViewHolder.mItemView.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        EventBusUtils.post(new GetMusicDetailInfoEvent(musicTypeSong.song_id));
-                    }
-                });
-
-            }
         }
 
         @Override

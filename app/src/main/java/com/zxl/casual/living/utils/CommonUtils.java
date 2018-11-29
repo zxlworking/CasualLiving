@@ -146,6 +146,13 @@ public class CommonUtils {
         }
     }
 
+//    public static final void hideIputKeyboard(View view) {
+//        InputMethodManager mInputKeyBoard = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//        if (view != null) {
+//            mInputKeyBoard.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//        }
+//    }
+
 
     public static final void regToWX(Context context){
         mIwxapi = WXAPIFactory.createWXAPI(context,Constants.WX_APP_ID,true);

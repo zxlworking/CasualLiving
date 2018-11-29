@@ -9,12 +9,9 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.zxl.casual.living.R;
 import com.zxl.casual.living.http.data.LrcListInfo;
-import com.zxl.casual.living.http.data.MusicDetailInfo;
-import com.zxl.common.DebugUtil;
 
 import java.io.IOException;
 
@@ -36,7 +33,7 @@ public class LrcView extends android.support.v7.widget.AppCompatTextView {
     private int index = 0;              //list集合下标
     private LrcListInfo mLrcListInfo;              //歌词信息
 
-    private MusicDetailInfo mMusicDetailInfo;
+    private String mMusicUrl;
 
     private MediaPlayer mMediaPlayer;
 
@@ -73,8 +70,8 @@ public class LrcView extends android.support.v7.widget.AppCompatTextView {
         mMusicPlayPauseImg = img;
     }
 
-    public void setLrcListInfo(MusicDetailInfo musicDetailInfo, LrcListInfo lrcListInfo) {
-        mMusicDetailInfo = musicDetailInfo;
+    public void setLrcListInfo(String musicUrl, LrcListInfo lrcListInfo) {
+        mMusicUrl = musicUrl;
         mLrcListInfo = lrcListInfo;
         invalidate();
 
@@ -82,7 +79,7 @@ public class LrcView extends android.support.v7.widget.AppCompatTextView {
 
         mMediaPlayer.reset();// 把各项参数恢复到初始状态
         try {
-            mMediaPlayer.setDataSource(mMusicDetailInfo.bitrate.file_link);
+            mMediaPlayer.setDataSource(mMusicUrl);
             mMediaPlayer.prepare(); // 进行缓冲
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override

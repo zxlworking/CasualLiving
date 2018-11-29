@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="4dp"
+        android:translationZ="@dimen/cardview_default_elevation"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground">
+        <EditText
+            android:id="@+id/search_et"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+            android:hint="请输入歌曲名称"/>
+    </android.support.v7.widget.CardView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/music_search_swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/music_search_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <include
+            android:id="@+id/music_search_loading_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/loading_view"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+        <include
+            android:id="@+id/music_search_load_error_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/load_error_view"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+    </FrameLayout>
+</LinearLayout>

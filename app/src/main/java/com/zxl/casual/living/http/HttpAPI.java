@@ -2,10 +2,7 @@ package com.zxl.casual.living.http;
 
 
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
-import com.zxl.casual.living.http.data.MusicDetailInfo;
-import com.zxl.casual.living.http.data.MusicInfoResponseBean;
-import com.zxl.casual.living.http.data.MusicSearchResult;
-import com.zxl.casual.living.http.data.MusicTypeInfo;
+import com.zxl.casual.living.http.data.MusicSearchResponseBean;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.data.TaoBaoAnchorListResponseBean;
@@ -75,16 +72,9 @@ public interface HttpAPI {
 //    Call<ResponseBody> uploadFile(@PartMap Map<String, RequestBody> params);
 
     //http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.catalogSug&query=一次就好
-    @GET("cgi_server/cgi_weather/test9.py")
-    public Observable<MusicInfoResponseBean<MusicSearchResult>> searchMusicList(@Query("param")String param);
-//    public Call<ResponseBody> searchMusicList(@Query("param")String param);
-
-    @GET("cgi_server/cgi_weather/test9.py")
-    public Observable<MusicInfoResponseBean<MusicDetailInfo>> getMusicDetailInfo(@Query("param")String param);
-
-    @GET("cgi_server/cgi_weather/test9.py")
-    public Observable<MusicInfoResponseBean<MusicTypeInfo>> getMusicListByType(@Query("param")String music_param_value);
-//    public Call<ResponseBody> getMusicListByType(@Query("param")String music_param_value);
+    @GET("cgi_server/cgi_weather/test10.py")
+    public Observable<MusicSearchResponseBean> searchMusic(@Query("music_operator")String music_operator,@Query("search_music_name")String search_music_name,@Query("search_music_offset")String search_music_offset,@Query("search_music_page_count")String search_music_page_count);
+//    public Call<ResponseBody> searchMusic(@Query("music_operator")String music_operator,@Query("search_music_name")String search_music_name,@Query("search_music_offset")String search_music_offset,@Query("search_music_page_count")String search_music_page_count);
 
     @Streaming
     @GET

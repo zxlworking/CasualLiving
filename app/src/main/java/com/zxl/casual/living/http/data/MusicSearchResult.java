@@ -4,105 +4,173 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by zxl on 2018/11/23.
+ * Created by zxl on 2018/11/29.
  */
 
 public class MusicSearchResult {
+
     /**
      {
-     "song":[
+     "result":{
+     "songs":[
      {
-     "bitrate_fee":"{"0":"0|0","1":"0|0"}",
-     "weight":"158099",
-     "songname":"一次就好",
-     "resource_type":"0",
-     "songid":"256002518",
-     "has_mv":"0",
-     "yyr_artist":"0",
-     "resource_type_ext":"0",
-     "artistname":"凌川夏",
-     "info":"",
-     "resource_provider":"1",
-     "control":"0000000000",
-     "encrypted_songid":"0207f4249d609565d9ac4L"
+     "name":"一次就好",
+     "id":440207429,
+     "pst":0,
+     "t":0,
+     "ar":[
+     {
+     "id":2747,
+     "name":"费玉清",
+     "tns":[
+
+     ],
+     "alias":[
+
+     ]
+     }
+     ],
+     "alia":[
+     "原唱：杨宗纬"
+     ],
+     "pop":100,
+     "st":0,
+     "rt":null,
+     "fee":0,
+     "v":13,
+     "crbt":null,
+     "cf":"",
+     "al":{
+     "id":34985144,
+     "name":"天籁之战 第五期",
+     "picUrl":"http://p1.music.126.net/UjTXWIpw1wtJwW75d7Vghw==/3311729029882017.jpg",
+     "tns":[
+
+     ],
+     "pic":3311729029882017
      },
-     Object{...},
-     Object{...},
-     Object{...},
+     "dt":224640,
+     "h":{
+     "br":320000,
+     "fid":0,
+     "size":8988256,
+     "vd":-0.88
+     },
+     "m":{
+     "br":160000,
+     "fid":0,
+     "size":4494151,
+     "vd":-0.43
+     },
+     "l":{
+     "br":96000,
+     "fid":0,
+     "size":2696508,
+     "vd":-0.44
+     },
+     "a":null,
+     "cd":"1",
+     "no":3,
+     "rtUrl":null,
+     "ftype":0,
+     "rtUrls":[
+
+     ],
+     "djId":0,
+     "copyright":2,
+     "s_id":0,
+     "rtype":0,
+     "rurl":null,
+     "mst":9,
+     "cp":543010,
+     "mv":0,
+     "publishTime":1478966400007,
+     "privilege":{
+     "id":440207429,
+     "fee":0,
+     "payed":0,
+     "st":0,
+     "pl":320000,
+     "dl":320000,
+     "sp":7,
+     "cp":1,
+     "subp":1,
+     "cs":false,
+     "maxbr":999000,
+     "fl":320000,
+     "toast":false,
+     "flag":128
+     }
+     },
      Object{...}
      ],
-     "order":"song,album",
-     "error_code":22000,
-     "album":[
-     {
-     "albumname":"一次就好",
-     "weight":"1580",
-     "artistname":"凌川夏",
-     "resource_type_ext":"0",
-     "artistpic":"http://qukufile2.qianqian.com/data2/music/3088D4F4A92EE9DD113B380A7D5B9B83/256608249/256608249.jpg@s_0,w_40",
-     "albumid":"256002517"
-     }
-     ]
+     "songCount":387
+     },
+     "code":200
      }
      */
 
-    public List<Song> song = new ArrayList<>();
-    public String order = "";
-    public int error_code = 0;
-    public List<Album> album = new ArrayList<>();
+    public int code = 0;
+
+    public Result result = null;
+
+    public class Result{
+        public int songCount = 0;
+        public List<Song> songs = new ArrayList<>();
+
+        @Override
+        public String toString() {
+            return "Resutl{" +
+                    "songCount=" + songCount +
+                    ", songs=" + songs +
+                    '}';
+        }
+    }
+
 
     public class Song{
-        public String bitrate_fee = "";
-        public String weight = "";
-        public String songname = "";
-        public String resource_type = "";
-        public String songid = "";
-        public String has_mv = "";
-        public String yyr_artist = "";
-        public String resource_type_ext = "";
-        public String artistname = "";
-        public String info = "";
-        public String resource_provider = "";
-        public String control = "";
-        public String encrypted_songid = "";
+        public String name = "";
+        public long id = 0;
+        public List<Artist> ar = new ArrayList<>();
+        public long dt = 0;
+        public Album al = null;
 
         @Override
         public String toString() {
             return "Song{" +
-                    "bitrate_fee='" + bitrate_fee + '\'' +
-                    ", weight='" + weight + '\'' +
-                    ", songname='" + songname + '\'' +
-                    ", resource_type='" + resource_type + '\'' +
-                    ", songid='" + songid + '\'' +
-                    ", has_mv='" + has_mv + '\'' +
-                    ", yyr_artist='" + yyr_artist + '\'' +
-                    ", resource_type_ext='" + resource_type_ext + '\'' +
-                    ", artistname='" + artistname + '\'' +
-                    ", info='" + info + '\'' +
-                    ", resource_provider='" + resource_provider + '\'' +
-                    ", control='" + control + '\'' +
-                    ", encrypted_songid='" + encrypted_songid + '\'' +
+                    "name='" + name + '\'' +
+                    ", id=" + id +
+                    ", ar=" + ar +
+                    ", dt=" + dt +
+                    ", al=" + al +
+                    '}';
+        }
+    }
+
+    public class Artist{
+        public long id = 0;
+        public String name = "";
+
+        @Override
+        public String toString() {
+            return "Artist{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
                     '}';
         }
     }
 
     public class Album{
-        public String albumname = "";
-        public String weight = "";
-        public String artistname = "";
-        public String resource_type_ext = "";
-        public String artistpic = "";
-        public String albumid = "";
+        public long id = 0;
+        public String name = "";
+        public String picUrl = "";
 
         @Override
         public String toString() {
             return "Album{" +
-                    "albumname='" + albumname + '\'' +
-                    ", weight='" + weight + '\'' +
-                    ", artistname='" + artistname + '\'' +
-                    ", resource_type_ext='" + resource_type_ext + '\'' +
-                    ", artistpic='" + artistpic + '\'' +
-                    ", albumid='" + albumid + '\'' +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
+                    ", picUrl='" + picUrl + '\'' +
                     '}';
         }
     }
@@ -110,10 +178,8 @@ public class MusicSearchResult {
     @Override
     public String toString() {
         return "MusicSearchResult{" +
-                "song=" + song +
-                ", order='" + order + '\'' +
-                ", error_code='" + error_code + '\'' +
-                ", album=" + album +
+                "code=" + code +
+                ", result=" + result +
                 '}';
     }
 }
