@@ -95,6 +95,10 @@ public class LrcView extends android.support.v7.widget.AppCompatTextView {
         }
     }
 
+    public LrcListInfo getLrcListInfo(){
+        return mLrcListInfo;
+    }
+
     public void startPlay(){
         mMusicPlayPauseImg.setImageResource(R.mipmap.pause_icon);
         mMediaPlayer.start();

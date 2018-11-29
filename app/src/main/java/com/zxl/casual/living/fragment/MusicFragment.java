@@ -1,5 +1,6 @@
 package com.zxl.casual.living.fragment;
 
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -93,6 +95,9 @@ public class MusicFragment extends BaseFragment {
     private ImageView mMusicDetailImg;
     private LrcView mLrcView;
     private ImageView mMusicPlayPauseImg;
+    private TextView mMusicDetailLrcTv;
+    private RecyclerView mMusicDetailLrcListView;
+    private LrcAdapter mLrcAdapter;
 
     private boolean isLogining = false;
 
@@ -131,6 +136,7 @@ public class MusicFragment extends BaseFragment {
                 case MSG_GET_LRC_SUCCESS:
                     LrcListInfo lrcListInfo = (LrcListInfo) msg.obj;
                     mLrcView.setLrcListInfo(mCurrentMusicDetailInfo, lrcListInfo);
+                    mLrcAdapter.notifyDataSetChanged();
                     break;
             }
         }
@@ -167,7 +173,13 @@ public class MusicFragment extends BaseFragment {
         mMusicDetailImg = mContentView.findViewById(R.id.music_detail_img);
         mLrcView = mContentView.findViewById(R.id.lrc_view);
         mMusicPlayPauseImg = mContentView.findViewById(R.id.music_play_pause_img);
+        mMusicDetailLrcTv = mContentView.findViewById(R.id.music_detail_lrc_tv);
+        mMusicDetailLrcListView = mContentView.findViewById(R.id.music_detail_lrc_list_view);
         mLrcView.setMusicPlayPauseImg(mMusicPlayPauseImg);
+        mLrcAdapter = new LrcAdapter();
+        LinearLayoutManager lrcLinearLayoutManager1 = new LinearLayoutManager(mActivity);
+        mMusicDetailLrcListView.setLayoutManager(lrcLinearLayoutManager1);
+        mMusicDetailLrcListView.setAdapter(mLrcAdapter);
 
         for(String typeName : Constants.MUSIC_TYPE_NAMES){
             mMusicTypeTableLayout.addTab(mMusicTypeTableLayout.newTab().setText(typeName));
@@ -202,6 +214,23 @@ public class MusicFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 mLrcView.doPausePlayClick();
+            }
+        });
+
+        mMusicDetailLrcTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mMusicDetailLrcListView.getVisibility() == View.GONE){
+                    mLrcView.setVisibility(View.GONE);
+                    mMusicDetailImg.setVisibility(View.GONE);
+                    mMusicDetailLrcListView.setVisibility(View.VISIBLE);
+                    mMusicDetailLrcTv.setTextColor(Color.parseColor("#ffffff"));
+                }else{
+                    mLrcView.setVisibility(View.VISIBLE);
+                    mMusicDetailImg.setVisibility(View.VISIBLE);
+                    mMusicDetailLrcListView.setVisibility(View.GONE);
+                    mMusicDetailLrcTv.setTextColor(Color.parseColor("#757575"));
+                }
             }
         });
 
@@ -543,6 +572,40 @@ public class MusicFragment extends BaseFragment {
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             container.removeView((View) object);
+        }
+    }
+
+    class LrcAdapter extends RecyclerView.Adapter<LrcViewHolder>{
+
+        @NonNull
+        @Override
+        public LrcViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int type) {
+            View view = LayoutInflater.from(mActivity).inflate(R.layout.item_lrc_view,viewGroup,false);
+            return new LrcViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull LrcViewHolder lrcViewHolder, int position) {
+            lrcViewHolder.mItemLrcTv.setText(mLrcView.getLrcListInfo().mLrcs.get(position).mContent);
+        }
+
+        @Override
+        public int getItemCount() {
+            return (mLrcView.getLrcListInfo() == null ? 0 : mLrcView.getLrcListInfo().mLrcs.size());
+        }
+    }
+
+    class LrcViewHolder extends RecyclerView.ViewHolder{
+
+        public View mItemView;
+
+        public TextView mItemLrcTv;
+
+        public LrcViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            mItemView = itemView;
+            mItemLrcTv = itemView.findViewById(R.id.item_lrc_tv);
         }
     }
 }
