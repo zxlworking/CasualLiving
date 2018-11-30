@@ -36,4 +36,5 @@ public class Constants {
 
     public static final String[] MUSIC_TYPE_NAMES = {"1","2","3","搜索"};
     public static final String MUSIC_OPERATOR_SEARCH_MUSIC = "1";
+    public static final String MUSIC_OPERATOR_OTHER = "-1";
 }

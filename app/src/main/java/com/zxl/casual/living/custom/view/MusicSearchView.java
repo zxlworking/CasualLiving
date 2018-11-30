@@ -21,10 +21,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.zxl.casual.living.R;
 import com.zxl.casual.living.common.LoadMoreAdapter;
+import com.zxl.casual.living.event.GetMusicInfoEvent;
 import com.zxl.casual.living.http.HttpUtils;
 import com.zxl.casual.living.http.data.MusicSearchResponseBean;
 import com.zxl.casual.living.http.data.MusicSearchResult;
@@ -32,7 +34,11 @@ import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
 import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
+import com.zxl.casual.living.utils.EventBusUtils;
 import com.zxl.common.DebugUtil;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by zxl on 2018/11/29.
@@ -307,7 +313,7 @@ public class MusicSearchView extends LinearLayout {
         }
 
         @Override
-        public void onBindContentViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+        public void onBindContentViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int position) {
             MusicSearchContentViewHolder musicSearchContentViewHolder = (MusicSearchContentViewHolder) viewHolder;
 
             Glide.with(mContext).load(getData().get(position).al.picUrl).into(musicSearchContentViewHolder.mItemMusicSearchContentImg);
@@ -323,10 +329,18 @@ public class MusicSearchView extends LinearLayout {
             }
             musicSearchContentViewHolder.mItemMusicSearchContentAuthorTv.setText(getData().get(position).ar.get(0).name);
 
+            long dtTime = getData().get(position).dt;
+            Date date = new Date(dtTime);
+            SimpleDateFormat sf = new SimpleDateFormat("mm:ss");
+            musicSearchContentViewHolder.mItemMusicSearchContentDurationTv.setText(sf.format(date));
+
             musicSearchContentViewHolder.mItemView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    EventBusUtils.post(new GetMusicDetailInfoEvent(musicTypeSong.song_id));
+                    long songId = getData().get(position).id;
+                    DebugUtil.d(TAG,"onClick::songId = " + songId);
+                    Toast.makeText(mContext,"onClick::songId = " + songId,Toast.LENGTH_SHORT).show();
+                    EventBusUtils.post(new GetMusicInfoEvent(songId));
                 }
             });
         }
@@ -376,6 +390,7 @@ public class MusicSearchView extends LinearLayout {
         private ImageView mItemMusicSearchContentImg;
         private TextView mItemMusicSearchContentTitleTv;
         private TextView mItemMusicSearchContentAuthorTv;
+        private TextView mItemMusicSearchContentDurationTv;
 
         public MusicSearchContentViewHolder(View itemView) {
             super(itemView);
@@ -383,6 +398,7 @@ public class MusicSearchView extends LinearLayout {
             mItemMusicSearchContentImg = mItemView.findViewById(R.id.item_music_search_content_img);
             mItemMusicSearchContentTitleTv = mItemView.findViewById(R.id.item_music_search_content_title_tv);
             mItemMusicSearchContentAuthorTv = mItemView.findViewById(R.id.item_music_search_content_author_tv);
+            mItemMusicSearchContentDurationTv = mItemView.findViewById(R.id.item_music_search_content_duration_tv);
         }
     }
 

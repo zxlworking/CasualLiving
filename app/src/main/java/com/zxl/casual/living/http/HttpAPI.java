@@ -2,6 +2,7 @@ package com.zxl.casual.living.http;
 
 
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
+import com.zxl.casual.living.http.data.MusicInfoResponseBean;
 import com.zxl.casual.living.http.data.MusicSearchResponseBean;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
@@ -71,10 +72,14 @@ public interface HttpAPI {
 //    @POST("cgi_server/cgi_weather/test8.py")
 //    Call<ResponseBody> uploadFile(@PartMap Map<String, RequestBody> params);
 
-    //http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.catalogSug&query=一次就好
     @GET("cgi_server/cgi_weather/test10.py")
     public Observable<MusicSearchResponseBean> searchMusic(@Query("music_operator")String music_operator,@Query("search_music_name")String search_music_name,@Query("search_music_offset")String search_music_offset,@Query("search_music_page_count")String search_music_page_count);
 //    public Call<ResponseBody> searchMusic(@Query("music_operator")String music_operator,@Query("search_music_name")String search_music_name,@Query("search_music_offset")String search_music_offset,@Query("search_music_page_count")String search_music_page_count);
+
+    @GET("cgi_server/cgi_weather/test10.py")
+    public Observable<MusicInfoResponseBean> getMusicInfo(@Query("music_operator")String music_operator, @Query("id")String id, @Query("comment_offset")String comment_offset, @Query("comment_page_count")String comment_page_count);
+//    public Call<ResponseBody> getMusicInfo(@Query("music_operator")String music_operator,@Query("id")String id,@Query("comment_offset")String comment_offset,@Query("comment_page_count")String comment_page_count);
+
 
     @Streaming
     @GET

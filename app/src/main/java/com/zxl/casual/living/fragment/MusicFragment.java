@@ -1,43 +1,26 @@
 package com.zxl.casual.living.fragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.zxl.casual.living.R;
-import com.zxl.casual.living.custom.view.LrcView;
 import com.zxl.casual.living.custom.view.MusicSearchView;
 import com.zxl.casual.living.custom.view.MusicTypeView;
-import com.zxl.casual.living.event.GetMusicDetailInfoEvent;
+import com.zxl.casual.living.event.GetMusicInfoEvent;
 import com.zxl.casual.living.http.HttpUtils;
-import com.zxl.casual.living.http.data.LrcInfo;
-import com.zxl.casual.living.http.data.LrcListInfo;
-import com.zxl.casual.living.http.data.MusicSearchResult;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
-import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
 import com.zxl.casual.living.utils.EventBusUtils;
 import com.zxl.common.DebugUtil;
@@ -45,15 +28,8 @@ import com.zxl.common.DebugUtil;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by zxl on 2018/11/21.
@@ -70,6 +46,8 @@ public class MusicFragment extends BaseFragment {
     private MusicTypeAdapter mMusicTypeAdapter;
 
     private List<View> mMusicViews = new ArrayList<>();
+
+    private boolean isLoading = false;
 
 
     @Nullable
@@ -111,7 +89,42 @@ public class MusicFragment extends BaseFragment {
         for(int i = 0; i < Constants.MUSIC_TYPE_NAMES.length; i++){
             mMusicTypeTableLayout.getTabAt(i).setText(Constants.MUSIC_TYPE_NAMES[i]);
         }
+
+        LinearLayout linearLayout = (LinearLayout) mMusicTypeTableLayout.getChildAt(0);
+        linearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        linearLayout.setDividerDrawable(ContextCompat.getDrawable(mActivity, R.drawable.layout_divider_vertical));
     }
+
+
+    private void getMusicInfo(boolean isFirst, long songId) {
+//        if(isLoading){
+//            return;
+//        }
+//        isLoading = true;
+
+        HttpUtils.getInstance().getMusicInfo(mActivity, Constants.MUSIC_OPERATOR_OTHER, String.valueOf(songId), "0", "20", new NetRequestListener() {
+            @Override
+            public void onSuccess(ResponseBaseBean responseBaseBean) {
+
+            }
+
+            @Override
+            public void onNetError() {
+
+            }
+
+            @Override
+            public void onNetError(Throwable e) {
+
+            }
+
+            @Override
+            public void onServerError(ResponseBaseBean responseBaseBean) {
+
+            }
+        });
+    }
+
 
     @Override
     public void onStop() {
@@ -126,11 +139,11 @@ public class MusicFragment extends BaseFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGetMusicDetailInfoEvent(GetMusicDetailInfoEvent event){
-//        getMusicDetailInfo(event.mSongId);
+    public void onGetMusicInfoEvent(GetMusicInfoEvent event){
+        getMusicInfo(true, event.mSongId);
     }
 
-     class MusicTypeAdapter extends PagerAdapter{
+    class MusicTypeAdapter extends PagerAdapter{
 
         @Override
         public int getCount() {

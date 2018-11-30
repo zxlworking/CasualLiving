@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import com.zxl.casual.living.common.FileUtils;
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
 import com.zxl.casual.living.http.data.DailySentenceResponseBean;
+import com.zxl.casual.living.http.data.MusicInfoResponseBean;
 import com.zxl.casual.living.http.data.MusicSearchResponseBean;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
@@ -802,6 +803,71 @@ public class HttpUtils {
                     });
         }else{
             DebugUtil.d(TAG,"searchMusic::net work error");
+            if(listener != null){
+                listener.onNetError();
+            }
+        }
+    }
+
+    public void getMusicInfo(Context context, String music_operator, String id, String comment_offset, String comment_page_count, final NetRequestListener listener){
+        DebugUtil.d(TAG,"getMusicInfo::music_operator = " + music_operator +
+                "::id = " + id +
+                "::comment_offset = " + comment_offset +
+                "::comment_page_count = " + comment_page_count);
+
+        if(isNetworkAvailable(context)){
+//            Call<ResponseBody> call = mHttpAPI.getMusicInfo(music_operator,id,comment_offset,comment_page_count);
+//            call.enqueue(new Callback<ResponseBody>() {
+//                @Override
+//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                    try {
+//                        String s = new String(response.body().bytes());
+//                        DebugUtil.d(TAG, "getMusicInfo::s = " + s);
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<ResponseBody> call, Throwable t) {
+//
+//                }
+//            });
+
+            Observable<MusicInfoResponseBean> observable = mHttpAPI.getMusicInfo(music_operator,id,comment_offset,comment_page_count);
+            observable.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<ResponseBaseBean>() {
+                        @Override
+                        public void onCompleted() {
+                            DebugUtil.d(TAG,"getMusicInfo::onCompleted");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            DebugUtil.d(TAG,"getMusicInfo::onError::e = " + e);
+                            if(listener != null){
+                                listener.onNetError(e);
+                            }
+                        }
+
+                        @Override
+                        public void onNext(ResponseBaseBean responseBaseBean) {
+                            DebugUtil.d(TAG,"getMusicInfo::onNext::responseBaseBean = " + responseBaseBean);
+                            if(responseBaseBean.code == 0){
+                                if(listener != null){
+                                    listener.onSuccess(responseBaseBean);
+                                }
+                            }else{
+                                if(listener != null){
+                                    listener.onServerError(responseBaseBean);
+                                }
+                            }
+                        }
+                    });
+        }else{
+            DebugUtil.d(TAG,"getMusicInfo::net work error");
             if(listener != null){
                 listener.onNetError();
             }

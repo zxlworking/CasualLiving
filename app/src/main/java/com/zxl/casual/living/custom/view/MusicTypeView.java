@@ -18,15 +18,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.zxl.casual.living.R;
 import com.zxl.casual.living.common.LoadMoreAdapter;
-import com.zxl.casual.living.event.GetMusicDetailInfoEvent;
-import com.zxl.casual.living.http.HttpUtils;
-import com.zxl.casual.living.http.data.ResponseBaseBean;
-import com.zxl.casual.living.http.listener.NetRequestListener;
-import com.zxl.casual.living.utils.Constants;
-import com.zxl.casual.living.utils.EventBusUtils;
 import com.zxl.common.DebugUtil;
 
 /**

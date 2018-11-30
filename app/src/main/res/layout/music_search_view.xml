@@ -18,7 +18,7 @@
         <EditText
             android:id="@+id/search_et"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="42dp"
             android:imeOptions="actionSearch"
             android:singleLine="true"
             android:hint="请输入歌曲名称"/>
