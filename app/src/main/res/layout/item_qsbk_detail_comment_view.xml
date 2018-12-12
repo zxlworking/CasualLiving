@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="4dp"
-    android:layout_marginTop="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
     android:translationZ="@dimen/cardview_default_elevation"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground">
@@ -20,7 +20,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
@@ -29,7 +29,8 @@
             <ImageView
                 android:id="@+id/user_head_img"
                 android:layout_width="48dp"
-                android:layout_height="48dp"/>
+                android:layout_height="48dp"
+                android:visibility="gone"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,7 +43,8 @@
                     android:id="@+id/user_sex_age_ll"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
                     <TextView
                         android:id="@+id/user_sex_tv"
                         android:layout_width="wrap_content"
@@ -61,7 +63,8 @@
             <TextView
                 android:id="@+id/comment_report"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <ImageView

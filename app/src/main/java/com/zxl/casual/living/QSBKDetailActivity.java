@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.zxl.casual.living.custom.view.CustomScaleView;
+import com.zxl.casual.living.http.HttpAPI;
 import com.zxl.casual.living.http.data.QSBKComment;
 import com.zxl.casual.living.http.data.QSBKDetail;
 import com.zxl.casual.living.http.data.QSBKElement;
@@ -34,6 +35,7 @@ import com.zxl.casual.living.utils.CommonUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.zxl.casual.living.utils.Constants;
 import com.zxl.common.DebugUtil;
 
 import okhttp3.OkHttpClient;
@@ -61,7 +63,7 @@ public class QSBKDetailActivity extends Activity {
 
     private Context mContext;
 
-    private IQueryQSBKDetail mIQueryQSBKDetail;
+    private HttpAPI mIQueryQSBKDetail;
     private Retrofit mRetrofit;
 
     private View mLoadingView;
@@ -145,11 +147,11 @@ public class QSBKDetailActivity extends Activity {
         OkHttpClient mOkHttpClient = new OkHttpClient.Builder().build();
         mRetrofit = new Retrofit.Builder()
                 //.baseUrl("http://www.zxltest.cn/")
-                .baseUrl("http://118.25.178.69/")
+                .baseUrl(Constants.WEATHER_BASE_URL)
                 .client(mOkHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        mIQueryQSBKDetail = mRetrofit.create(IQueryQSBKDetail.class);
+        mIQueryQSBKDetail = mRetrofit.create(HttpAPI.class);
 
         Gson mGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
         mQSBKElement = mGson.fromJson(getIntent().getStringExtra(EXTRA_QSBK_ELEMENT),QSBKElement.class);
@@ -422,8 +424,4 @@ public class QSBKDetailActivity extends Activity {
         }
     }
 
-    public interface IQueryQSBKDetail{
-        @GET("/cgi_server/cgi_qsbk/cgi_qsbk_detail.py")
-        public Call<QSBKDetail> queryQSBKDetail(@Query("author_id") String author_id);
-    }
 }

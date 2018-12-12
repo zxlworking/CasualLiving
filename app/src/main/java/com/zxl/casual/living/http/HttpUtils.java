@@ -56,8 +56,8 @@ public class HttpUtils {
 
     private HttpUtils(){
         OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
-        okBuilder.connectTimeout(1, TimeUnit.MINUTES);
-        okBuilder.readTimeout(1,TimeUnit.MINUTES);
+        okBuilder.connectTimeout(30, TimeUnit.SECONDS);
+        okBuilder.readTimeout(30,TimeUnit.SECONDS);
         OkHttpClient okHttpClient = okBuilder.build();
 
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder();

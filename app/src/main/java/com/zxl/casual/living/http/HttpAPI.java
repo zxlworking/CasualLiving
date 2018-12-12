@@ -4,6 +4,7 @@ package com.zxl.casual.living.http;
 import com.zxl.casual.living.http.data.CityInfoListResponseBean;
 import com.zxl.casual.living.http.data.MusicInfoResponseBean;
 import com.zxl.casual.living.http.data.MusicSearchResponseBean;
+import com.zxl.casual.living.http.data.QSBKDetail;
 import com.zxl.casual.living.http.data.QSBKElementList;
 import com.zxl.casual.living.http.data.ResponseBaseBean;
 import com.zxl.casual.living.http.data.TaoBaoAnchorListResponseBean;
@@ -45,6 +46,9 @@ public interface HttpAPI {
 
     @GET("cgi_server/cgi_weather/cgi_qsbk.py")
     public Observable<QSBKElementList> getQSBK(@Query("page")int page, @Query("user_id")String user_id);
+
+    @GET("cgi_server/cgi_weather/cgi_qsbk_detail.py")
+    public Call<QSBKDetail> queryQSBKDetail(@Query("author_id") String author_id);
 
     @GET("cgi_server/cgi_weather/test5.py")
     public Observable<UserInfoResponseBean> register(@Query("user_operator")String user_operator, @Query("user_info")String user_info);
