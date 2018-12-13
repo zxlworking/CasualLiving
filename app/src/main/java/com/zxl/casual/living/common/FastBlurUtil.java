@@ -135,6 +135,8 @@ public class FastBlurUtil {
 
 
     private static Bitmap doBlur(Bitmap sentBitmap, int radius, boolean canReuseInBitmap) {
+        DebugUtil.d(TAG, "doBlur::radius = " + radius);
+
         Bitmap bitmap;
         if (canReuseInBitmap) {
             bitmap = sentBitmap;

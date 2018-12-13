@@ -63,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="68dp"
+                android:layout_marginBottom="48dp"
                 android:visibility="gone"/>
 
             <LinearLayout
@@ -88,8 +88,8 @@
                         android:layout_gravity="center_vertical">
                         <ImageView
                             android:id="@+id/music_play_and_pause_img"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
                             android:src="@mipmap/play_icon"
                             android:scaleType="fitCenter"/>
                     </LinearLayout>

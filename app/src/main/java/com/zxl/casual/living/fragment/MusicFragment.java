@@ -240,6 +240,18 @@ public class MusicFragment extends BaseFragment {
                                                     destroyFastBlurBmp();
                                                     mMusicInfoFastBlurView.setImageBitmap(bitmap);
                                                     mLastFastBlurBmp = bitmap;
+
+                                                    PaletteParseUtil paletteParseUtil = new PaletteParseUtil();
+                                                    paletteParseUtil.parse(mCurrentGetMusicInfoEvent.mSongUrl, mLastFastBlurBmp, new PaletteParseUtil.OnPaletteCompleteListener() {
+                                                        @Override
+                                                        public void onComplete(String url, int bgColor, int textColor) {
+                                                            if(TextUtils.equals(url,mCurrentGetMusicInfoEvent.mSongUrl)){
+                                                                mMusicInfoBackImg.setBackgroundColor(bgColor);
+                                                                mMusicInfoControllerView.setBackgroundColor(bgColor);
+                                                                mLrcAdapter.setTextColor(textColor);
+                                                            }
+                                                        }
+                                                    });
                                                 }
                                             });
                                         }else{
@@ -288,18 +300,6 @@ public class MusicFragment extends BaseFragment {
                         if(lrcInfos.size() > 0){
                             mLrcLinearLayoutManager.scrollToPosition(0);
                         }
-
-                        PaletteParseUtil paletteParseUtil = new PaletteParseUtil();
-                        paletteParseUtil.parse(mCurrentGetMusicInfoEvent.mSongUrl, mMusicInfoImg, new PaletteParseUtil.OnPaletteCompleteListener() {
-                            @Override
-                            public void onComplete(String url, int bgColor, int textColor) {
-                                if(TextUtils.equals(url,mCurrentGetMusicInfoEvent.mSongUrl)){
-                                    mMusicInfoBackImg.setBackgroundColor(bgColor);
-                                    mMusicInfoControllerView.setBackgroundColor(bgColor);
-                                    mLrcAdapter.setTextColor(textColor);
-                                }
-                            }
-                        });
 
                         startPlayMusic(musicInfoResponseBean.music_play_info.data.get(0).url);
 

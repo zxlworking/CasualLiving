@@ -66,6 +66,7 @@ public class MusicSearchView extends LinearLayout {
     private SwipeRefreshLayout mMusicSearchSwipeRefreshLayout;
     private RecyclerView mMusicSearchListView;
     private MusicSearchAdapter mMusicSearchAdapter;
+    private LinearLayoutManager mMusicSearchLinearLayoutManager;
 
     private int mPageCount = 20;
     private int mCurrentPage = 0;
@@ -95,6 +96,10 @@ public class MusicSearchView extends LinearLayout {
                     mTotalPage = songnum / mPageCount + (songnum % mPageCount == 0 ? 0 : 1) + 1;
                     mCurrentPage++;
                     mMusicSearchAdapter.setData(mFirstTemp.result.result.songs,mCurrentPage,mTotalPage);
+
+                    if(songnum > 0){
+                        mMusicSearchLinearLayoutManager.scrollToPosition(0);
+                    }
 
                     isLoading = false;
                     mMusicSearchSwipeRefreshLayout.setRefreshing(false);
@@ -177,8 +182,8 @@ public class MusicSearchView extends LinearLayout {
         });
 
         mMusicSearchListView = mContentView.findViewById(R.id.music_search_list_view);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
-        mMusicSearchListView.setLayoutManager(linearLayoutManager);
+        mMusicSearchLinearLayoutManager = new LinearLayoutManager(mContext);
+        mMusicSearchListView.setLayoutManager(mMusicSearchLinearLayoutManager);
         mMusicSearchAdapter = new MusicSearchAdapter();
         mMusicSearchListView.setAdapter(mMusicSearchAdapter);
 
