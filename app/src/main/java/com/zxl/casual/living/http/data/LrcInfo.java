@@ -11,6 +11,7 @@ public class LrcInfo {
 
     public String mCurrentTime = "";
     public String mContent = "";
+    public boolean hasTime = false;
 
     @Override
     public String toString() {

@@ -27,6 +27,68 @@ public class PaletteParseUtil {
 
     private static final String TAG = "PaletteParseUtil";
 
+    public void parse(final String mBmpUrl, Bitmap bmp, final OnPaletteCompleteListener listener){
+        Palette.from(bmp).generate(new Palette.PaletteAsyncListener() {
+            @Override
+            public void onGenerated(@Nullable Palette palette) {
+                DebugUtil.d(TAG,"onGenerated::mBmpUrl = " + mBmpUrl);
+                    /*
+                    vibrant      -  有活力的颜色
+                    lightVibrant -  有活力的亮色
+                    darkVibrant  -  有活力的暗色
+                    muted        -  柔和暗淡的颜色
+                    lightMuted   -  柔和的亮色
+                    darkMuted    -  柔和的暗色
+                     */
+                    /*
+                    //一般会将getRgb设置给控件背景色，getBodyTextColor()设置给文字颜色
+                    textView.setBackgroundColor(vibrantSwatch.getRgb());
+                    textView.setTextColor(vibrantSwatch.getBodyTextColor());
+                     */
+
+                if(listener != null){
+
+                    Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+                    Palette.Swatch lightVibrantSwatch = palette.getLightVibrantSwatch();
+                    Palette.Swatch darkVibrantSwatch = palette.getDarkVibrantSwatch();
+                    Palette.Swatch mutedSwatch = palette.getMutedSwatch();
+                    Palette.Swatch lightMutedSwatch = palette.getLightMutedSwatch();
+                    Palette.Swatch darkMutedSwatch = palette.getDarkMutedSwatch();
+                    DebugUtil.d(TAG,"vibrantSwatch = " + palette.getVibrantSwatch());
+                    DebugUtil.d(TAG,"lightVibrantSwatch = " + lightVibrantSwatch);
+                    DebugUtil.d(TAG,"darkVibrantSwatch = " + darkVibrantSwatch);
+                    DebugUtil.d(TAG,"mutedSwatch = " + mutedSwatch);
+                    DebugUtil.d(TAG,"lightMutedSwatch = " + lightMutedSwatch);
+                    DebugUtil.d(TAG,"darkMutedSwatch = " + darkMutedSwatch);
+
+                    int bgColor = 0;
+                    int textColor = 0;
+                    if(vibrantSwatch != null){
+                        bgColor = vibrantSwatch.getRgb();
+                        textColor = vibrantSwatch.getBodyTextColor();
+                    }else if(lightVibrantSwatch != null){
+                        bgColor = lightVibrantSwatch.getRgb();
+                        textColor = lightVibrantSwatch.getBodyTextColor();
+                    }else if(lightMutedSwatch != null){
+                        bgColor = lightMutedSwatch.getRgb();
+                        textColor = lightMutedSwatch.getBodyTextColor();
+                    }else if(darkVibrantSwatch != null){
+                        bgColor = darkVibrantSwatch.getRgb();
+                        textColor = darkVibrantSwatch.getBodyTextColor();
+                    }else if(mutedSwatch != null){
+                        bgColor = mutedSwatch.getRgb();
+                        textColor = mutedSwatch.getBodyTextColor();
+                    }else if(darkMutedSwatch != null){
+                        bgColor = darkMutedSwatch.getRgb();
+                        textColor = darkMutedSwatch.getBodyTextColor();
+                    }
+
+                    listener.onComplete(mBmpUrl, bgColor, textColor);
+                }
+            }
+        });
+    }
+
     public void parse(String url, ImageView img, OnPaletteCompleteListener listener){
         DebugUtil.d(TAG,"parse::url = " + url);
         CustomSimpleTarget mBitmapTarget = new CustomSimpleTarget();
@@ -110,22 +172,22 @@ public class PaletteParseUtil {
                         int textColor = 0;
                         if(vibrantSwatch != null){
                             bgColor = vibrantSwatch.getRgb();
-                            textColor = vibrantSwatch.getTitleTextColor();
+                            textColor = vibrantSwatch.getBodyTextColor();
                         }else if(lightVibrantSwatch != null){
                             bgColor = lightVibrantSwatch.getRgb();
-                            textColor = lightVibrantSwatch.getTitleTextColor();
-                        }else if(darkVibrantSwatch != null){
-                            bgColor = darkVibrantSwatch.getRgb();
-                            textColor = darkVibrantSwatch.getTitleTextColor();
-                        }else if(mutedSwatch != null){
-                            bgColor = mutedSwatch.getRgb();
-                            textColor = mutedSwatch.getTitleTextColor();
+                            textColor = lightVibrantSwatch.getBodyTextColor();
                         }else if(lightMutedSwatch != null){
                             bgColor = lightMutedSwatch.getRgb();
-                            textColor = lightMutedSwatch.getTitleTextColor();
+                            textColor = lightMutedSwatch.getBodyTextColor();
+                        }else if(darkVibrantSwatch != null){
+                            bgColor = darkVibrantSwatch.getRgb();
+                            textColor = darkVibrantSwatch.getBodyTextColor();
+                        }else if(mutedSwatch != null){
+                            bgColor = mutedSwatch.getRgb();
+                            textColor = mutedSwatch.getBodyTextColor();
                         }else if(darkMutedSwatch != null){
                             bgColor = darkMutedSwatch.getRgb();
-                            textColor = darkMutedSwatch.getTitleTextColor();
+                            textColor = darkMutedSwatch.getBodyTextColor();
                         }
 
                         mOnPaletteCompleteListener.onComplete(mBmpUrl, bgColor, textColor);

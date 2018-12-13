@@ -72,6 +72,7 @@ public class MusicFragment extends BaseFragment {
 
     private RecyclerView mLrcRecyclerView;
     private LrcAdapter mLrcAdapter;
+    private LinearLayoutManager mLrcLinearLayoutManager;
 
     private View mMusicInfoContentView;
     private ImageView mMusicInfoFastBlurView;
@@ -193,8 +194,8 @@ public class MusicFragment extends BaseFragment {
         linearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         linearLayout.setDividerDrawable(ContextCompat.getDrawable(mActivity, R.drawable.layout_divider_vertical));
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
-        mLrcRecyclerView.setLayoutManager(linearLayoutManager);
+        mLrcLinearLayoutManager = new LinearLayoutManager(mActivity);
+        mLrcRecyclerView.setLayoutManager(mLrcLinearLayoutManager);
         mLrcAdapter = new LrcAdapter();
         mLrcRecyclerView.setAdapter(mLrcAdapter);
 
@@ -261,6 +262,19 @@ public class MusicFragment extends BaseFragment {
                                     LrcInfo lrcInfo = new LrcInfo();
                                     lrcInfo.mCurrentTime = sArray[0];
                                     lrcInfo.mContent = sArray[1];
+                                    lrcInfo.hasTime = true;
+                                    lrcInfos.add(lrcInfo);
+                                }
+                            }
+
+                            if(lrcInfos.isEmpty()){
+                                DebugUtil.d(TAG,"lrcInfos.isEmpty::s = " + lrcStr.contains("\n"));
+                                lrcArray = lrcStr.split("\n");
+                                for(String s : lrcArray){
+                                    DebugUtil.d(TAG,"lrcInfos.isEmpty::s = " + s);
+                                    LrcInfo lrcInfo = new LrcInfo();
+                                    lrcInfo.mCurrentTime = "00:00";
+                                    lrcInfo.mContent = s;
                                     lrcInfos.add(lrcInfo);
                                 }
                             }
@@ -271,6 +285,9 @@ public class MusicFragment extends BaseFragment {
                             lrcInfos.add(lrcInfo);
                         }
                         mLrcAdapter.setData(lrcInfos);
+                        if(lrcInfos.size() > 0){
+                            mLrcLinearLayoutManager.scrollToPosition(0);
+                        }
 
                         PaletteParseUtil paletteParseUtil = new PaletteParseUtil();
                         paletteParseUtil.parse(mCurrentGetMusicInfoEvent.mSongUrl, mMusicInfoImg, new PaletteParseUtil.OnPaletteCompleteListener() {
