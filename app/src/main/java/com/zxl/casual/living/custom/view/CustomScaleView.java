@@ -188,12 +188,12 @@ public class CustomScaleView extends FrameLayout {
                         double deltaDistance = mCurrentDoublePointerDistance - mLastDoublePointerDistance;
                         DebugUtil.d(TAG,"DoublePointer::deltaDistance = " + deltaDistance);
 
-                        double width = mScaleImg.getWidth() + deltaDistance * 2;
-                        double height = mScaleImg.getHeight() + deltaDistance * 2;
+                        double width = mScaleImg.getWidth() + deltaDistance * 6;
+                        double height = mScaleImg.getHeight() + deltaDistance * 6;
 
                         mScaleImg.setLayoutParams(new FrameLayout.LayoutParams((int)width,(int)height));
 
-                        scrollBy((int) deltaDistance,(int) deltaDistance);
+                        scrollBy((int) deltaDistance * 3,(int) deltaDistance * 3);
 
                     }else{
                         mLastDoublePointerDistance = distance;

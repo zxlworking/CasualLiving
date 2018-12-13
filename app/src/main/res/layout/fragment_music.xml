@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -8,24 +8,125 @@
     android:padding="8dp"
     android:orientation="vertical">
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/music_type_table_layout"
+    <LinearLayout
+        android:id="@+id/music_content_view"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:background="#f7f7f7"
-        app:tabIndicatorColor="#d13030"
-        app:tabSelectedTextColor="#000000"
-        app:tabTextColor="#959595"
-        app:tabMode="fixed"
-        app:tabGravity="fill">
-    </android.support.design.widget.TabLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/music_type_view_pager"
+        <android.support.design.widget.TabLayout
+            android:id="@+id/music_type_table_layout"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:background="#f7f7f7"
+            app:tabIndicatorColor="#d13030"
+            app:tabSelectedTextColor="#000000"
+            app:tabTextColor="#959595"
+            app:tabMode="fixed"
+            app:tabGravity="fill">
+        </android.support.design.widget.TabLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/music_type_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="4dp">
+
+        </android.support.v4.view.ViewPager>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/music_info_content_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="4dp">
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_music_info"
+        android:visibility="gone">
 
-    </android.support.v4.view.ViewPager>
-</LinearLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/music_info_fast_blur_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"/>
+            <ImageView
+                android:id="@+id/music_info_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="32dp"
+                android:layout_gravity="center"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/lrc_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="68dp"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:id="@+id/music_info_controller_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:padding="8dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+                        <ImageView
+                            android:id="@+id/music_play_and_pause_img"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@mipmap/play_icon"
+                            android:scaleType="fitCenter"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/music_info_back_img"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/back_icon"/>
+
+        </FrameLayout>
+
+        <include
+            android:id="@+id/music_info_loading_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/loading_view"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+        <include
+            android:id="@+id/music_info_load_error_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/load_error_view"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+</FrameLayout>

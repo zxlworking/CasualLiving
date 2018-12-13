@@ -9,7 +9,7 @@ import java.util.List;
 
 public class LrcInfo {
 
-    public int mCurrentTime = 0;
+    public String mCurrentTime = "";
     public String mContent = "";
 
     @Override

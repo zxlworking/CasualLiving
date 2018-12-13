@@ -337,10 +337,11 @@ public class MusicSearchView extends LinearLayout {
             musicSearchContentViewHolder.mItemView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    long songId = getData().get(position).id;
+                    MusicSearchResult.Song song = getData().get(position);
+                    long songId = song.id;
                     DebugUtil.d(TAG,"onClick::songId = " + songId);
-                    Toast.makeText(mContext,"onClick::songId = " + songId,Toast.LENGTH_SHORT).show();
-                    EventBusUtils.post(new GetMusicInfoEvent(songId));
+                    //Toast.makeText(mContext,"onClick::songId = " + songId,Toast.LENGTH_SHORT).show();
+                    EventBusUtils.post(new GetMusicInfoEvent(songId, song.al.picUrl));
                 }
             });
         }

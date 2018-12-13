@@ -70,6 +70,7 @@ public class MusicLrc {
     public boolean qfy = false;
     public boolean sfy = false;
     public boolean sgc = false;
+    public Lrc lrc = null;
     public Tlyric tlyric = null;
 
     public class Lrc{

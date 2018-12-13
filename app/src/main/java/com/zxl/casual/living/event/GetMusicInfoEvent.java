@@ -8,8 +8,11 @@ public class GetMusicInfoEvent {
 
     public long mSongId = 0;
 
-    public GetMusicInfoEvent(long songId){
+    public String mSongUrl = "";
+
+    public GetMusicInfoEvent(long songId, String songUrl){
         mSongId = songId;
+        mSongUrl = songUrl;
     }
 
 }
