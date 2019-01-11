@@ -17,8 +17,12 @@ import com.zxl.casual.living.http.data.UpdateInfoResponseBean;
 import com.zxl.casual.living.http.data.UserInfoResponseBean;
 import com.zxl.casual.living.http.listener.NetRequestListener;
 import com.zxl.casual.living.http.retrofit.FileRequestBody;
+import com.zxl.casual.living.utils.CommonUtils;
 import com.zxl.casual.living.utils.Constants;
 import com.zxl.common.DebugUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
